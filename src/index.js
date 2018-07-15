@@ -97,7 +97,7 @@ $( document ).ready(function() {
 
         if (name.charAt(0)=='T') {
           if (!gauge[name] && name.charAt(0)=='T') {
-            $("#house").append(`<div id='${name}' class='200x200px'></div>`);
+            $("#house").append(`<div id='${name}'></div>`);
 
             gauge[name] = new JustGage({
               id: newVal.payload.name,
