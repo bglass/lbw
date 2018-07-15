@@ -82,6 +82,9 @@ $( document ).ready(function() {
     $('#socketConnectedState').text( uibuilder.get('ioConnected') )
     $('#feVersion').text( uibuilder.get('version') )
 
+    var gauge = {};
+
+
     // Turn on debugging (default is off)
     uibuilder.debug(true)
 
@@ -89,11 +92,31 @@ $( document ).ready(function() {
     // Note that you can also listen for 'msgsReceived' as they are updated at the same time
     // but newVal relates to the attribute being listened to.
     uibuilder.onChange('msg', function(newVal){
-        console.info('property msg changed!')
-        console.dir(newVal)
-        $('#showMsg').text(JSON.stringify(newVal))
-        //uibuilder.set('msgCopy', newVal)
-    })
+
+        var name = newVal.payload.name
+
+        if (name.charAt(0)=='T') {
+          if (!gauge[name] && name.charAt(0)=='T') {
+            $("#house").append(`<div id='${name}' class='200x200px'></div>`);
+
+            gauge[name] = new JustGage({
+              id: newVal.payload.name,
+              value: -273.15,
+              min: 10,
+              max: 30,
+              title: newVal.payload.name,
+              decimals: 1
+            });
+
+          };
+
+          gauge[name].refresh(newVal.payload.number);
+        };
+    });
+
+
+
+
 
     // You can get attributes manually. Non-existent attributes return 'undefined'
     //console.dir(uibuilder.get('msg'))
