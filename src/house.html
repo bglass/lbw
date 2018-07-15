@@ -34,11 +34,18 @@
 
     <!-- OPTIONAL: Normalize is used to make things the same across browsers. Index is for your styles -->
     <link rel="stylesheet" href="./vendor/normalize.css/normalize.css">
-    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./house.css">
 
 </head>
 <body>
     <!-- The "app" element is where the code for dynamic updates is attached -->
+    <div id="app">
+        <h1>
+            Lijnbaanweg 25
+        </h1>
+        <div id="house"></div>
+    </div>
+
     <div id="app">
         <h1>
             Lijnbaanweg 25
@@ -49,8 +56,6 @@
         <p>Last Message Sent:</p>
         <code id="showMsgSent"></code>
     </div>
-
-    <div id="T202" class="200x160px">T202</div>
 
     <!-- These MUST be in the right order. Note no leading / -->
     <!-- REQUIRED: Socket.IO is loaded only once for all instances
@@ -64,10 +69,10 @@
     <!-- OPTIONAL: You probably want this. Put your custom code here -->
     <script src="./raphael-2.1.4.min.js"></script>
     <script src="./justgage.js"></script>
-    <script src="./gauges.js"></script>
+    <!-- <script src="./gauges.js"></script> -->
 
-    <script src="./index.js"></script>
+    <script src="./house.js"></script>
 
-    
+
 </body>
 </html>
