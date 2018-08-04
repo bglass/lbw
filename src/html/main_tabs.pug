@@ -1,0 +1,39 @@
+style
+  include ../css/tabs.css
+
+mixin button(target)
+  button.tablinks(id= "btn"+target 
+    onclick='tab_select(event, "'+target+'")')= target
+
+mixin item(id)
+  .square
+    .content
+      .table
+        .gauge(id=id)
+
+
+.tab
+  +button("Time")
+  +button("House")
+  +button("Rooms")
+  +button("Heating")
+  +button("Climate")
+  +button("Phone")
+  +button("Debug")
+
+  
+  
+#Basic.tabcontent
+  .grid3
+    +item("T1")
+    +item("T2")
+    +item("T3")
+    +item("T4")
+
+#Clocks.tabcontent
+  .grid2
+    +item("C1")
+    +item("C2")
+
+#Debug.tabcontent
+  include debug
