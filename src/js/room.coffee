@@ -65,7 +65,10 @@ exports.Room = class Room
       "RoomT":
         title:    ""
         scale:    "S1":
-          type:     "horizontal"
+          number:
+            rotate: 0
+            divisions: 4
+          type:     "semi_arc"
           presets:   ["Room_Temperature", "Ticks_Left"]
           quantity: "T":
             indicator:
