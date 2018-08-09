@@ -1,7 +1,30 @@
+//- #Rooms
+  
 style
   include ../css/rooms.css
 
-.name
-.number
-.temperature
-.unit
+mixin part(id)
+  .partWrap(id=id)
+    .part
+
+mixin info
+  .partWrap("NW")
+    .part
+      .name
+      .number
+
++info
++part("N")
++part("NE")
++part("W")
++part("RoomT")
++part("E")
++part("SW")
++part("S")
++part("SE")
+
+
+
+
+//- .temperature
+//- .unit

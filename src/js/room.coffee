@@ -1,3 +1,5 @@
+Gauge = (require "glass-gauge").Gauge
+
 exports.Room = class Room
 
   @store   = {}
@@ -10,6 +12,7 @@ exports.Room = class Room
     @store[id]
 
   @create: (rooms) ->
+    insert_temperature_gauge()
     for number, name of rooms
       new Room
         number: number
@@ -50,3 +53,25 @@ exports.Room = class Room
   update_page: ->
     for key, value of @data
       $("#Rooms .#{key}").text value
+    if @data.temperature
+      Gauge.setValue "RoomT": {T: @data.temperature}
+      Gauge.show "RoomT"
+    else
+      Gauge.hide "RoomT"
+
+
+  insert_temperature_gauge = ->
+    Gauge.create
+      "RoomT":
+        title:    ""
+        scale:    "S1":
+          type:     "horizontal"
+          presets:   ["Room_Temperature", "Ticks_Left"]
+          quantity: "T":
+            indicator:
+              "Bar":      type: "bar"
+              "Digital":  type: "digital"
+              "Color":
+                type:       "color"
+                target:     "Bar"
+                attribute:  "stroke"

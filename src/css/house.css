@@ -1,4 +1,4 @@
-.houseGrid {
+#House {
   display: grid;
   grid-template-columns: repeat(12, 8%);
   grid-template-rows: repeat(6, 8%);

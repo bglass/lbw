@@ -1,3 +1,10 @@
 #Rooms {
+  display: grid;
+  grid-template-columns: 16.6% 66.6% 16.6%;
+  /* grid-template-rows: repeat(6, 8%); */
+  /* grid-gap:    1vw; */
+  width: 100%;
+  overflow:hidden;
   font-size: 100;
+
 }
