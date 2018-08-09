@@ -1,0 +1,117 @@
+.houseGrid {
+  display: grid;
+  grid-template-columns: repeat(12, 8%);
+  grid-template-rows: repeat(6, 8%);
+  /* grid-gap:    1vw; */
+  width: 100%;
+  overflow:hidden;
+}
+
+.dataGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 33%);
+  grid-template-rows: repeat(3, 33%);
+  /* grid-gap:    1vw; */
+  width: 100%;
+  overflow:hidden;
+}
+
+
+.roomWrap {
+  height: 0;
+  overflow: hidden;
+
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+  border: 1px solid black;
+
+  cursor: pointer;
+
+}
+.dataWrap {
+  height: 0;
+  /* overflow: hidden; */
+
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+  /* border: 1px solid black; */
+}
+
+.room {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align:center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1vw;
+}
+
+.dataCell {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align:center;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 1vw;
+  display: flex;
+}
+
+.verticalCenter {
+  display: block;
+}
+
+.NW {
+  justify-content: flex-start;
+  text-align:left;
+  padding-left:   0.2vw;
+
+}
+
+.room .name{
+  font-size: 0.8vw;
+}
+
+.temperature{
+  font-size: 2vw;
+}
+
+.room .number, .room .unit{
+  font-size: 0.5vw;
+
+}
+
+
+#R202   { grid-row:  3;   grid-column: 3 }
+#R203   { grid-row:  3;   grid-column: 5 }
+#R211   { grid-row:  3;   grid-column: 9 }
+#R212   { grid-row:  3;   grid-column: 10}
+
+#R100   { grid-row:  3;   grid-column: 4 }
+#R101   { grid-row:  4;   grid-column: 2 }
+#R102   { grid-row:  4;   grid-column: 4 }
+#R103   { grid-row:  4;   grid-column: 5 }
+#R104   { grid-row:  4;   grid-column: 3 }
+#R111   { grid-row:  4;   grid-column: 8 }
+#R112   { grid-row:  4;   grid-column: 10}
+
+#R001   { grid-row:  5;   grid-column: 2 }
+#R008   { grid-row:  5;   grid-column: 3 }
+#R005   { grid-row:  5;   grid-column: 4 }
+#R004   { grid-row:  5;   grid-column: 5 }
+#R006   { grid-row:  5;   grid-column: 6 }
+#R007   { grid-row:  5;   grid-column: 7 }
+#R011   { grid-row:  5;   grid-column: 8 }
+#R012   { grid-row:  5;   grid-column: 10}
+
+#RK03   { grid-row:  6;   grid-column: 3 }
+#RK05   { grid-row:  6;   grid-column: 4 }

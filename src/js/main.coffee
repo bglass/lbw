@@ -1,4 +1,7 @@
-require '../css/index.css'
+require '../css/main.css'
+
+{House} = require './house.coffee'
+{Room}  = require './room.coffee'
 
 {NodeRed} = require './node_red.coffee'
 time = require './time.coffee'
@@ -7,16 +10,35 @@ time = require './time.coffee'
 window.tab_select = Tabs.tab_select
 
 
+rooms = {
+  "001": "Entry",   "008": "Toilet",    "005": "Living",
+  "004": "Pantry",  "006": "Kitchen",   "007": "Laundry",
+  "011": "Garage",  "012": "Party",     "101": "Lina",
+  "102": "Tian",    "103": "Parents",   "104": "Bath",
+  "100": "Hall",    "111": "Library",   "112": "Studio",
+  "202": "Office",  "203": "Jane",      "211": "Vide",
+  "212": "Cave",    "K03": "Crawl",     "K05": "Crawl"
+}
 
 
 
 $ ->
 
-  $("#btnDebug").click();
+  $("#btnHouse").click();
 
   time.add()
 
+  house = new House
+  house.setup
+    rooms:  rooms
+    target: Room.goto
+
+  Room.create rooms
+
   red = new NodeRed
+
+  red.subscribe [ house.receive, Room.receive ]
+
 
   #Manually send a message back to Node-RED after 2 seconds
   window.setTimeout (->

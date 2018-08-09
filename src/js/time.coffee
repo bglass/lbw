@@ -64,9 +64,7 @@ export add = ->
   tick = ->
     time = new Date
     #
-    x = time.getMilliseconds()
-    x = Math.round(x/250)*250
-    s = time.getSeconds() + x/1000
+    s = time.getSeconds()
     m = time.getMinutes() + s/60
     h12 = time.getHours() %% 12 + m/60
     h24 = time.getHours()       + m/60

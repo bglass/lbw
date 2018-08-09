@@ -43,4 +43,124 @@
     from {opacity: 0;}
     to {opacity: 1;}
 }
-</style><div class="tab"><button class="tablinks" id="btnTime" onclick="tab_select(event, &quot;Time&quot;)">Time</button><button class="tablinks" id="btnHouse" onclick="tab_select(event, &quot;House&quot;)">House</button><button class="tablinks" id="btnRooms" onclick="tab_select(event, &quot;Rooms&quot;)">Rooms</button><button class="tablinks" id="btnHeating" onclick="tab_select(event, &quot;Heating&quot;)">Heating</button><button class="tablinks" id="btnClimate" onclick="tab_select(event, &quot;Climate&quot;)">Climate</button><button class="tablinks" id="btnPhone" onclick="tab_select(event, &quot;Phone&quot;)">Phone</button><button class="tablinks" id="btnDebug" onclick="tab_select(event, &quot;Debug&quot;)">Debug</button></div><div class="tabcontent" id="Debug"><div id="app"><h1>Lijnbaanweg 25</h1><code id="showMsg"></code><p>Last Control Message Received:</p><code id="showCtrlMsg"></code><p>Last Message Sent:</p><code id="showMsgSent"></code></div></div><div class="tabcontent" id="Time"></div><script type="text/javascript" src="bundle.min.js"></script></body></html>
+</style><div class="tab"><button class="tablinks" id="btnTime" onclick="tab_select(event, &quot;Time&quot;)">Time</button><button class="tablinks" id="btnHouse" onclick="tab_select(event, &quot;House&quot;)">House</button><button class="tablinks" id="btnRooms" onclick="tab_select(event, &quot;Rooms&quot;)">Rooms</button><button class="tablinks" id="btnHeating" onclick="tab_select(event, &quot;Heating&quot;)">Heating</button><button class="tablinks" id="btnClimate" onclick="tab_select(event, &quot;Climate&quot;)">Climate</button><button class="tablinks" id="btnPhone" onclick="tab_select(event, &quot;Phone&quot;)">Phone</button><button class="tablinks" id="btnDebug" onclick="tab_select(event, &quot;Debug&quot;)">Debug</button></div><div class="tabcontent" id="Debug"><div id="app"><h1>Lijnbaanweg 25</h1><code id="showMsg"></code><p>Last Control Message Received:</p><code id="showCtrlMsg"></code><p>Last Message Sent:</p><code id="showMsgSent"></code></div></div><div class="tabcontent" id="Time"></div><div class="tabcontent" id="House"><style>.houseGrid {
+  display: grid;
+  grid-template-columns: repeat(12, 8%);
+  grid-template-rows: repeat(6, 8%);
+  /* grid-gap:    1vw; */
+  width: 100%;
+  overflow:hidden;
+}
+
+.dataGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 33%);
+  grid-template-rows: repeat(3, 33%);
+  /* grid-gap:    1vw; */
+  width: 100%;
+  overflow:hidden;
+}
+
+
+.roomWrap {
+  height: 0;
+  overflow: hidden;
+
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+  border: 1px solid black;
+
+  cursor: pointer;
+
+}
+.dataWrap {
+  height: 0;
+  /* overflow: hidden; */
+
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+  /* border: 1px solid black; */
+}
+
+.room {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align:center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1vw;
+}
+
+.dataCell {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align:center;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 1vw;
+  display: flex;
+}
+
+.verticalCenter {
+  display: block;
+}
+
+.NW {
+  justify-content: flex-start;
+  text-align:left;
+  padding-left:   0.2vw;
+
+}
+
+.room .name{
+  font-size: 0.8vw;
+}
+
+.temperature{
+  font-size: 2vw;
+}
+
+.room .number, .room .unit{
+  font-size: 0.5vw;
+
+}
+
+
+#R202   { grid-row:  3;   grid-column: 3 }
+#R203   { grid-row:  3;   grid-column: 5 }
+#R211   { grid-row:  3;   grid-column: 9 }
+#R212   { grid-row:  3;   grid-column: 10}
+
+#R100   { grid-row:  3;   grid-column: 4 }
+#R101   { grid-row:  4;   grid-column: 2 }
+#R102   { grid-row:  4;   grid-column: 4 }
+#R103   { grid-row:  4;   grid-column: 5 }
+#R104   { grid-row:  4;   grid-column: 3 }
+#R111   { grid-row:  4;   grid-column: 8 }
+#R112   { grid-row:  4;   grid-column: 10}
+
+#R001   { grid-row:  5;   grid-column: 2 }
+#R008   { grid-row:  5;   grid-column: 3 }
+#R005   { grid-row:  5;   grid-column: 4 }
+#R004   { grid-row:  5;   grid-column: 5 }
+#R006   { grid-row:  5;   grid-column: 6 }
+#R007   { grid-row:  5;   grid-column: 7 }
+#R011   { grid-row:  5;   grid-column: 8 }
+#R012   { grid-row:  5;   grid-column: 10}
+
+#RK03   { grid-row:  6;   grid-column: 3 }
+#RK05   { grid-row:  6;   grid-column: 4 }
+</style><div class="houseGrid"><div class="roomWrap" id="R001"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R008"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R005"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R004"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R006"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R007"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R011"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R012"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R101"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R102"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R103"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R104"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R100"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R111"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R112"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R202"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R203"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R211"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="R212"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="RK03"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div><div class="roomWrap" id="RK05"><div class="room"><div class="dataGrid"><div class="dataWrap"><div class="dataCell NW"><div class="verticalCenter"><div class="name"></div><div class="number"></div></div></div></div><div class="dataWrap"><div class="dataCell N"></div></div><div class="dataWrap"><div class="dataCell NE"></div></div><div class="dataWrap"><div class="dataCell W"></div></div><div class="dataWrap"><div class="dataCell C"><div class="verticalCenter"><div class="temperature"></div><div class="unit"></div></div></div></div><div class="dataWrap"><div class="dataCell E"></div></div><div class="dataWrap"><div class="dataCell SW"></div></div><div class="dataWrap"><div class="dataCell S"></div></div><div class="dataWrap"><div class="dataCell SE"></div></div></div></div></div></div></div><div class="tabcontent" id="Rooms"><style>#Rooms {
+  font-size: 100;
+}
+</style><div class="name"></div><div class="number"></div><div class="temperature"></div><div class="unit"></div></div><script type="text/javascript" src="bundle.min.js"></script></body></html>

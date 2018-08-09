@@ -5,12 +5,6 @@ mixin button(target)
   button.tablinks(id= "btn"+target 
     onclick='tab_select(event, "'+target+'")')= target
 
-mixin item(id)
-  .square
-    .content
-      .table
-        .gauge(id=id)
-
 
 .tab
   +button("Time")
@@ -25,3 +19,9 @@ mixin item(id)
   include debug
 
 #Time.tabcontent
+
+#House.tabcontent
+  include house
+
+#Rooms.tabcontent
+  include rooms
