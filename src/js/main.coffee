@@ -2,6 +2,7 @@ require '../css/main.css'
 
 {House} = require './house.coffee'
 {Room}  = require './room.coffee'
+{KNX}   = require './knx.coffee'
 
 {NodeRed} = require './node_red.coffee'
 time = require './time.coffee'
@@ -22,6 +23,8 @@ rooms = {
 
 
 
+
+
 $ ->
 
   $("#btnHouse").click();
@@ -37,8 +40,8 @@ $ ->
 
   red = new NodeRed
 
-  red.subscribe [ house.receive, Room.receive ]
-
+  red.subscribe    [ KNX.receive, house.receive, Room.receive ]
+  red.subscribe_ga [ KNX.ga_setup ]
 
   #Manually send a message back to Node-RED after 2 seconds
   window.setTimeout (->

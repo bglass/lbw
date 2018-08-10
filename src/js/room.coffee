@@ -1,4 +1,5 @@
 Gauge = (require "glass-gauge").Gauge
+{KNX}   = require './knx.coffee'
 
 exports.Room = class Room
 
@@ -18,6 +19,10 @@ exports.Room = class Room
         number: number
         name:   name
 
+    # exceptions
+    @store["201"] = @store["202"]
+
+
   drop1st = (str) ->
     str.substr 1
 
@@ -26,12 +31,13 @@ exports.Room = class Room
     $("#btnRooms").click();
     number = drop1st evt.currentTarget.id
     room   = Room.find number
-    room.update_page()
+    room.switch()
     Room.current = number
 
   @receive: (payload) ->
     key  = payload.name.substr 1,3
-    if payload.number  and (room = Room.find key)
+
+    if room = Room.find key
       room.receive (payload)
 
   receive: (payload) ->
@@ -44,20 +50,30 @@ exports.Room = class Room
         @data.temperature = payload.number.toFixed 1
         @data.unit        = payload.unit
 
+      # when "1-1" # Switch
+        # console.log "pay?", payload, payload.number
+
     if room == Room.current
       @update_page()
 
-
-
-
-  update_page: ->
+  switch: ->
     for key, value of @data
       $("#Rooms .#{key}").text value
-    if @data.temperature
+
+    tsensors = KNX.tsensor_names @data.number
+    console.log "tsensors", tsensors
+    if tsensors.length > 0
       Gauge.setValue "RoomT": {T: @data.temperature}
       Gauge.show "RoomT"
     else
       Gauge.hide "RoomT"
+
+
+  update: ->
+
+
+    # $("#Rooms .S").text "Temperatures: " + KNX.list_temperature_sensors @data.number
+
 
 
   insert_temperature_gauge = ->

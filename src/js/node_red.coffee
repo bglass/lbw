@@ -7,6 +7,7 @@ exports.NodeRed = class NodeRed
     uibuilder.debug false
     @debug = false
     @receivers = []
+    @ga_setup = []
     @attach_events()
 
 
@@ -28,6 +29,8 @@ exports.NodeRed = class NodeRed
   subscribe: (receivers) ->
     @receivers = @receivers.concat receivers
 
+  subscribe_ga: (receivers) ->
+    @ga_setup = @ga_setup.concat receivers
 
 
   attach_events:  ->
@@ -40,8 +43,13 @@ exports.NodeRed = class NodeRed
         console.dir msg
       $('#showMsg').text JSON.stringify(msg)
 
-      for rx in @receivers
-        rx msg.payload
+      switch msg.topic
+        when "dpt"
+          for rx in @receivers
+            rx msg.payload
+        when "GA"
+          for rx in @ga_setup
+            rx msg.payload
 
 
 

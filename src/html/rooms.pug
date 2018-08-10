@@ -4,11 +4,15 @@ style
   include ../css/rooms.css
 
 mixin part(id)
-  .partWrap(id=id)
+  .partWrap(class=id)
     .part
 
+mixin gauge(id)
+  .partWrap(class=id)
+    .part(id=id)
+
 mixin info
-  .partWrap("NW")
+  .partWrap(class="NW")
     .part
       .name
       .number
@@ -17,7 +21,7 @@ mixin info
 +part("N")
 +part("NE")
 +part("W")
-+part("RoomT")
++gauge("RoomT")
 +part("E")
 +part("SW")
 +part("S")
