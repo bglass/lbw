@@ -2,7 +2,7 @@ require '../css/main.css'
 
 {House} = require './house.coffee'
 {Room}  = require './room.coffee'
-{KNX}   = require './knx.coffee'
+{KNX} = require './knx.coffee'
 
 {NodeRed} = require './node_red.coffee'
 time = require './time.coffee'
@@ -17,15 +17,16 @@ rooms = {
   "011": "Garage",  "012": "Party",     "101": "Lina",
   "102": "Tian",    "103": "Parents",   "104": "Bath",
   "100": "Hall",    "111": "Library",   "112": "Studio",
-  "202": "Office",  "203": "Jane",      "211": "Vide",
-  "212": "Cave",    "K03": "Crawl",     "K05": "Crawl"
+  "202": "Top",     "203": "Jane",      "211": "Vide",
+  "212": "Cave",    "K03": "Crawl",     "K05": "Crawl",
+  "201": "Office"
 }
 
 
 
 
-
 $ ->
+
 
   $("#btnHouse").click();
 
@@ -40,19 +41,21 @@ $ ->
 
   red = new NodeRed
 
+  red.subscribe_ga [ KNX.ga_setup, Room.setup, red.request_replay ]
   red.subscribe    [ KNX.receive, house.receive, Room.receive ]
-  red.subscribe_ga [ KNX.ga_setup ]
 
-  #Manually send a message back to Node-RED after 2 seconds
-  window.setTimeout (->
-    console.info 'Sending a message back to Node-RED - after 2s delay'
-    console.info "Yo!"
-    red.send
-      'topic': 'uibuilderfe'
-      'payload': 'I am a message sent from the uibuilder front end'
-  ), 2000
+
+
+  # #Manually send a message back to Node-RED after 2 seconds
+  # window.setTimeout (->
+  #   console.info 'Sending a message back to Node-RED - after 2s delay'
+  #   console.info "Yo!"
+  #   red.send
+  #     'topic': 'uibuilderfe'
+  #     'payload': 'I am a message sent from the uibuilder front end'
+  # ), 2000
 
   # Manually send a control message. Include cacheControl:REPLAY to test cache handling
   # Shouldn't be needed in this example since window.load will also send cacheControl and we should
   # be done before then.
-  red.sendCtrl 'cacheControl': 'REPLAY'
+  # red.sendCtrl 'cacheControl': 'REPLAY'

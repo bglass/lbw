@@ -1,87 +1,74 @@
 exports.KNX = class KNX
 
+  @store = {}
+  @find:  (x)   ->    KNX.store[x]
+  @get:   (x)   ->    if y = KNX.find x then y else new KNX(x)
+
+  constructor: (@ga )->
+    KNX.store[@ga] = @
+    @timestamp = 0
+    @value     = 0
+    @unit      = ""
+
+
   @ga_setup: (payload) ->
+    for ga, definition of payload.ga_catalog
+      ko = KNX.get ga
 
-    KNX.ko = {}
-
-    for k, v of payload
-      # names, dpts, trades, rooms, subnames, specials
-      KNX.ko[k] = v
-
-    KNX.ko.timestamp = {}
-    KNX.ko.value     = {}
-    KNX.ko.unit      = {}
-
-    KNX.ko.setpoint = {}
-    KNX.ko.status = {}
-    KNX.ko.dimmer = {}
-    for ga, special of KNX.ko.specials
-      KNX.ko.status[ga]   = true       if /\?/.test special
-      KNX.ko.setpoint[ga] = true       if /=/.test  special
-      KNX.ko.dimmer[ga]   = true       if /~/.test special
+      for k, v of definition
+        # name, dpt, trade, room, subname, dimmer, setpoint, status
+        ko[k] = v
 
   @receive: (payload) ->
-    ga = payload.ga
-    KNX.ko.value[ga]      = payload.room_number
-    KNX.ko.unit[ga]       = payload.unit
-    KNX.ko.timestamp[ga]  = payload.timestamp
+    ko = KNX.find payload.ga
+    if not ko
+      console.log "todo: correct name in ETS:", payload
+    else
+      ko.receive payload
 
-  names = (ga_list) ->
-    ga_list.map (x) -> KNX.ko.names[x]
+  receive: (payload) ->
+    @value      = payload.number
+    @unit       = payload.unit
+    @timestamp  = payload.timestamp
+
+  @names: (ko_list) ->
+    names ko_list
+
+  names = (ko_list) ->
+    ko_list.map (x) -> x.name
 
 
-  list_ga_of = (room_number) ->
+  ko_of_room = (room_number) ->
     found = []
-    for ga, number of KNX.ko.rooms
-      if (number == room_number)
-        found.push ga
+    for ga, ko of KNX.store
+      if (ko.room == room_number)
+        found.push ko
     return found
 
-  tsensors = (room) ->
-    list = list_ga_of room
-    list.filter (x) -> 
-      KNX.ko.trades[x] == "T"     and
-        not KNX.ko.setpoint[x]    and
-        not KNX.ko.status[x]
-
-  tsetpoints = (room) ->
-    list = list_ga_of room
-    list.filter (x) -> 
-      KNX.ko.trades[x] == "T"     and
-        KNX.ko.setpoint[x]        and
-        not KNX.ko.status[x]
-
-  @tsetpoint_names: (room) ->  names( tsetpoints room)
-  @tsensor_names:   (room) ->  names( tsensors   room)
-
-
-
-
-
-    # for ga in payload
-    #   name = ga.col1
-    #
-    #   if typeof name is 'string'
-    #
-    #     regex = /(\w)(\d\d\d)\.*([\w\d]*)([~=\?]*)/
-    #     if match =  regex.exec name
-    #       type    = match[1]
-    #       number  = match[2]
-    #       unit    = match[3]
-    #       special = match[4]
-
-
-
-        #
-        # if room = Room.find key
-        #
-        #   switch type
-        #     when "T"
-        #       switch rest
-        #         when "=", "=?"
-        #           room.ko.setpoint.push name
-        #         else
-        #           room.ko.temperature.push name
-        #     when "L"
-        #       console.log name
-        #
+  @find_specific: (room, type) ->
+    list = ko_of_room room
+    list.filter (ko) -> 
+      switch type
+        when "tsensor"
+          ko.trade == "T"     and
+            not ko.setpoint   and
+            not ko.status
+        when "tsetpoint"
+          ko.trade == "T"     and
+            ko.setpoint       and
+            not ko.status
+        when "lswitched"
+          ( ko.trade == "L"  or
+            ko.trade == "B")    and
+            not ko.dimmer       and
+            not ko.status
+        when "ldimmed"
+          ko.trade == "L"     and
+            ko.dimmer         and
+            not ko.status
+        when "socket"
+          ko.trade == "W"     and
+            not ko.status
+        when "valve"
+          ko.trade == "V"     and
+            not ko.status

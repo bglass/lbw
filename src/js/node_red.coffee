@@ -33,6 +33,11 @@ exports.NodeRed = class NodeRed
     @ga_setup = @ga_setup.concat receivers
 
 
+  request_replay: (_) =>
+    @sendCtrl 'uibuilderCtrl': 'knx replay'
+
+
+
   attach_events:  ->
     # If msg changes - msg is updated when a standard msg is received from Node-RED over Socket.IO
     # Note that you can also listen for 'msgsReceived' as they are updated at the same time
