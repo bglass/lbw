@@ -42,6 +42,7 @@ module.exports = {
       path: path.resolve(__dirname, 'uibuilder/' + url + '/dist'),
       filename: 'bundle.min.js'
   },
+  devtool: 'source-map',
   plugins: [
     webpackJQueryPluginConf,
     UglifyJSPluginConf,

@@ -2,7 +2,8 @@ Gauge   = (require "glass-gauge").Gauge
 {KNX}   =  require './knx.coffee'
 icon    =  require '../html/icons.pug'
 
-
+sliders =  require '../html/rooms/light_sliders.pug'
+iconbar =  require '../html/icon/bar.pug'
 
 exports.Room = class Room
 
@@ -70,8 +71,13 @@ exports.Room = class Room
     insert_icons "socket", "#Rooms .SE", KNX.names(@socket)
     insert_icons "bulb",   "#Rooms .NE", KNX.names(@light_switched)
 
+
+
+
+    insert_dimmer "#Rooms .E", KNX.names(@light_dimmed)
+
     # $("#Rooms .NE").empty().append  "LS: #{KNX.names @light_switched}"
-    $("#Rooms .E").empty().append   "LD: #{KNX.names @light_dimmed}"
+    # $("#Rooms .E").empty().append   "LD: #{KNX.names @light_dimmed}"
     # $("#Rooms .SE").empty().append  "socket: #{KNX.names @socket}"
     $("#Rooms .SW").empty().append  "valve: #{KNX.names @valve}"
 
@@ -117,12 +123,24 @@ exports.Room = class Room
     # if room == Room.current
     #   @update_page()
 
+
+  # also see https://codepen.io/kunukn/pen/pgqvpQ for a different, very nice design
+
+  insert_dimmer = (selector, list) ->
+
+    $(selector).empty().append (sliders items: list)
+
   insert_icons = (shape, selector, list) ->
 
     cell = $(selector).empty()
-    for name in list
-      cell.append icon(shape: shape)
-      cell.append name
+    src = iconbar(shape: shape, items: list)
+    console.log "iconbar", src
+    cell.append src
+
+
+    # for name in list
+    #   cell.append icon(shape: shape)
+    #   cell.append name
 
 
 

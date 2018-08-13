@@ -27,7 +27,6 @@ rooms = {
 
 $ ->
 
-
   $("#btnHouse").click();
 
   time.add()

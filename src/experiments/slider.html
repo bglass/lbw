@@ -1,0 +1,67 @@
+<style>
+  .sliders {
+    display: flex;
+     width:   10vw;
+     height:  30vw;
+     border: 1px solid #eee;
+  }
+
+  .slider {
+    width:  100%;
+    height:  100%;
+    border: 1px dashed #000;
+  }
+
+  .ranger {
+    width: 100%;
+    height: 95%;
+    -webkit-appearance: slider-vertical;
+  }
+
+  .gitter {
+    display: grid;
+    grid-template-columns: 16.6% 16.6%;
+    width: 100%;
+    overflow:hidden;
+    font-size: 100;
+  }
+
+</style>
+
+<div class="gitter">
+
+  <div class="cell">
+    <div class="sliders">
+      <div class='slider'>
+        <input class='ranger' id='#{item}' type='range' orient='vertical'/>
+      </div>
+      <div class='slider'>
+        <input class='ranger' id='#{item}' type='range'  orient='vertical'/>
+      </div>
+      <div class='slider'>
+        <input class='ranger' id='#{item}' type='range'  orient='vertical'/>
+      </div>
+    </div>
+  </div>
+
+  <div class="cell">
+    <div class="gitter">
+      <div class="cell">
+        <div class="sliders">
+          <div class='slider'>
+            <input class='ranger' id='#{item}' type='range'  orient='vertical'/>
+          </div>
+          <div class='slider'>
+            <input class='ranger' id='#{item}' type='range' orient='vertical' />
+          </div>
+          <div class='slider'>
+            <input class='ranger' id='#{item}' type='range'  orient='vertical'/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- orient='vertical' -->
