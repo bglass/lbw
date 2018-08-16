@@ -1,4 +1,5 @@
 .sliders
   for item in items
     .slider_box
-      input.slider( id=item type='range' orient='vertical' )
+      - id = item.name.replace(/~/, "Dim")
+      input.slider( id=id type='range' orient='vertical' )

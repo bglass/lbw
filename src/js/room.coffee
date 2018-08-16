@@ -44,8 +44,20 @@ exports.Room = class Room
     for ko, i in @tsetpoint
       ko.subscribe update_gauge("RoomT", "Tset"+i )
 
+    for ko in @light_switched
+      ko.subscribe update_color("stroke", "bulb"+ko.name)
+
+    for ko in @light_dimmed
+      id = ko.name.replace /~/, "Dim"
+      base_name = ko.name.replace /\.*~/, ""
+      base_ko   = KNX.findByName base_name
+      base_ko.subscribe update_value(id)
+
+
 
   switch_to: ->
+
+
     # static text
     $("#Rooms .name").text @name
     $("#Rooms .number").text @number
@@ -79,6 +91,10 @@ exports.Room = class Room
     insert_icons  "#Rooms .NE", @light_switched, "bulb"
     insert_dimmer "#Rooms .E",  @light_dimmed
 
+    for ko in @light_switched
+      ko.refresh()
+    for ko in @light_dimmed
+      ko.refresh()
 
 
   drop1st = (str) -> str.substr 1
@@ -107,14 +123,22 @@ exports.Room = class Room
 
   # also see https://codepen.io/kunukn/pen/pgqvpQ for a different, very nice design
 
-  update_color = (element) -> (value, timestamp) ->
-    element.setAttribute "color", "hsl(60, 100%, #{value}%)"
+  update_color = (attribute, element_name) -> (raw_value, timestamp) ->
+
+    if typeof raw_value == 'boolean'
+      value = if raw_value then 60 else 0
+    else
+      value = raw_value * 0.6
+    if element = $("#"+element_name)[0]
+      element.setAttribute attribute, "hsl(50, 100%, #{value}%)"
 
   update_text  = (element) -> (value, timestamp) ->
     $element.empty().append value.toFixed(1)
 
-  update_value = (element) -> (value, timestamp) ->
-    element.value = value
+  update_value = (element_name) -> (value, timestamp) ->
+    if element = $("#"+element_name)[0]
+      # console.log "found", element
+      element.value = value
 
   update_gauge = (gauge, quantity) -> (value, timestamp) ->
     data = {}
@@ -128,9 +152,8 @@ exports.Room = class Room
 
   insert_icons = (selector, list, shape) ->
 
-    subnames = list.map (x) -> x.subname
     cell = $(selector).empty()
-    src = iconbar(shape: shape, items: subnames)
+    src = iconbar(shape: shape, items: list)
     cell.append src
 
   insert_temperature_gauge = ->
