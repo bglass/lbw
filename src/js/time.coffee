@@ -1,5 +1,9 @@
-glass = require "glass-gauge"
-Gauge = glass.Gauge
+# glass = require "glass-gauge"
+# Gauge = glass.Gauge
+
+{Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
+
+
 
 export add = ->
 

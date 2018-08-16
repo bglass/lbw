@@ -9,19 +9,30 @@
 
 }
 
+.partWrap SE {
+}
+
 .iconbar {
   display: flex;
   align-items: center;
   justify-content:space-between;
+  align-content: center;
+  height: 100%;
 }
+
 
 /* .iconcell {
   flex: 1;
 } */
 .iconcell {
   overflow:hidden;
-  margin-top: auto;
+  text-align:center;
 }
+.iconcell p {
+  margin: 0;
+}
+
+
 .icon {
   /* width:  5vw;
   height: 5vw; */

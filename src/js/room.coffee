@@ -1,4 +1,6 @@
-Gauge   = (require "glass-gauge").Gauge
+# Gauge   = (require "glass-gauge").Gauge
+{Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
+
 {KNX}   =  require './knx.coffee'
 icon    =  require '../html/icons.pug'
 
@@ -22,14 +24,10 @@ exports.Room = class Room
     insert_valve_gauge()
 
   @setup: (payload) ->
-
     for number, name of Room.rooms
-
       room = Room.get number
       room.setup(name)
 
-    # exceptions
-    # Room.store["201"] = Room.store["202"]
 
   setup: (@name) ->
     @tsensor         = KNX.find_specific @number, "tsensor"
@@ -41,6 +39,11 @@ exports.Room = class Room
     @socket          = KNX.find_specific @number, "socket"
     @valve           = KNX.find_specific @number, "valve"
 
+    for ko, i in @tsensor
+      ko.subscribe update_gauge("RoomT", "T"+i )
+    for ko, i in @tsetpoint
+      ko.subscribe update_gauge("RoomT", "Tset"+i )
+
 
   switch_to: ->
     # static text
@@ -48,50 +51,41 @@ exports.Room = class Room
     $("#Rooms .number").text @number
 
     # temperature gauge
-    if @tsensor?.length > 0
-      Gauge.setValue "RoomT": T:  @tsensor[0].value
-      Gauge.setValue "RoomT": Tset: 21 # @tsetpoint[0].value  # DUMMY!
-      Gauge.show "RoomT"
-    else
+    if not @tsensor?.length > 0
       Gauge.hide "RoomT"
+      Gauge.hide_indicator "RoomT", "Needle1"
+    else
+      Gauge.show "RoomT"
+      if @tsensor.length == 1
+        Gauge.hide_indicator "RoomT", "Needle1"
+      else
+        Gauge.show_indicator "RoomT", "Needle1"
+
+    for ko in @tsensor
+      ko.refresh()
+    for ko in @tsetpoint
+      ko.refresh()
 
     # valves
     if @valve?.length > 0
       Gauge.setValue "RoomV": V: @valve[0].value
-      console.log "valve", @name, @valve[0]
 
       Gauge.show "RoomV"
     else
       Gauge.hide "RoomV"
 
+    # lights and sockets
+    insert_icons  "#Rooms .SE", @socket,         "socket"
+    insert_icons  "#Rooms .NE", @light_switched, "bulb"
+    insert_dimmer "#Rooms .E",  @light_dimmed
 
-
-    # explore
-
-    insert_icons "socket", "#Rooms .SE", KNX.names(@socket)
-    insert_icons "bulb",   "#Rooms .NE", KNX.names(@light_switched)
-
-
-
-
-    insert_dimmer "#Rooms .E", KNX.names(@light_dimmed)
-
-    # $("#Rooms .NE").empty().append  "LS: #{KNX.names @light_switched}"
-    # $("#Rooms .E").empty().append   "LD: #{KNX.names @light_dimmed}"
-    # $("#Rooms .SE").empty().append  "socket: #{KNX.names @socket}"
-    $("#Rooms .SW").empty().append  "valve: #{KNX.names @valve}"
-
-
-
-  # update: ->
-  #
-  #   $("#Rooms .S").text "Temperatures: " + @temperature 0
 
 
   drop1st = (str) -> str.substr 1
 
   @goto: (evt) ->
     $("#btnRooms").click();
+    history.pushState {}, "Rooms", "#Rooms"
     number = drop1st evt.currentTarget.id
     room   = Room.find number
     room.switch_to()
@@ -111,38 +105,33 @@ exports.Room = class Room
 
 
 
-    #cell_name
-    # switch payload.dpst
-    #   when "9-1" # Temperature [dC]
-    #     @data.temperature = payload.number.toFixed 1
-    #     @data.unit        = payload.unit
-    #
-    #   # when "1-1" # Switch
-    #     # console.log "pay?", payload, payload.number
-    #
-    # if room == Room.current
-    #   @update_page()
-
-
   # also see https://codepen.io/kunukn/pen/pgqvpQ for a different, very nice design
 
-  insert_dimmer = (selector, list) ->
+  update_color = (element) -> (value, timestamp) ->
+    element.setAttribute "color", "hsl(60, 100%, #{value}%)"
 
+  update_text  = (element) -> (value, timestamp) ->
+    $element.empty().append value.toFixed(1)
+
+  update_value = (element) -> (value, timestamp) ->
+    element.value = value
+
+  update_gauge = (gauge, quantity) -> (value, timestamp) ->
+    data = {}
+    data[gauge] = {}
+    data[gauge][quantity] = {value: value, timestamp: timestamp}
+    Gauge.setValue data
+
+
+  insert_dimmer = (selector, list) ->
     $(selector).empty().append (sliders items: list)
 
-  insert_icons = (shape, selector, list) ->
+  insert_icons = (selector, list, shape) ->
 
+    subnames = list.map (x) -> x.subname
     cell = $(selector).empty()
-    src = iconbar(shape: shape, items: list)
-    console.log "iconbar", src
+    src = iconbar(shape: shape, items: subnames)
     cell.append src
-
-
-    # for name in list
-    #   cell.append icon(shape: shape)
-    #   cell.append name
-
-
 
   insert_temperature_gauge = ->
     Gauge.create
@@ -155,7 +144,7 @@ exports.Room = class Room
           type:     "semi_arc"
           presets:   ["Room_Temperature", "Ticks_Left"]
           quantity:
-            "T":
+            "T0":
               indicator:
                 "Bar":      type: "bar"
                 "Digital":  type: "digital"
@@ -163,7 +152,15 @@ exports.Room = class Room
                   type:       "color"
                   target:     "Bar"
                   attribute:  "stroke"
-            "Tset":
+                "Needle0":
+                  type:       "pointer"
+                  shape:      "needle1"
+            "T1":
+              indicator:
+                "Needle1":
+                  type:       "pointer"
+                  shape:      "needle1"
+            "Tset0":
               indicator:
                 "Setpoint":
                   type:   "pointer"

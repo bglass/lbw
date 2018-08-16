@@ -27,7 +27,8 @@ rooms = {
 
 $ ->
 
-  $("#btnHouse").click();
+  tab = if    hash = window.location.hash.substr 1 then hash else  "House"
+  $("#btn" + tab).click();
 
   time.add()
 
