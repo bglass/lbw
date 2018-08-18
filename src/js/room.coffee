@@ -1,7 +1,6 @@
 # Gauge   = (require "glass-gauge").Gauge
 {Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
 
-{KNX}   =  require './knx.coffee'
 {Device}=  require './device.coffee'
 icon    =  require '../html/icons.pug'
 
@@ -31,11 +30,6 @@ exports.Room = class Room
 
 
   setup: (@name) ->
-    # @socket          = KNX.find_specific @number, "socket"
-    # @tsensor         = KNX.find_specific @number, "tsensor"
-    # @tsetpoint       = KNX.find_specific @number, "tsetpoint"
-    # @valve           = KNX.find_specific @number, "valve"
-
     @socket          = Device.find_type @number, "socket"
     @tsensor         = Device.find_type @number, "tsensor"
     @tsetpoint       = Device.find_type @number, "tsetpoint"

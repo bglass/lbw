@@ -1,8 +1,7 @@
-{KNX}   =  require './knx.coffee'
-
 exports.Device = class Device
-  @store = {}
-  @find:  (x)   ->    Device.store[x]
+  @store        = {}
+  @ko_callback  = {}
+  @find:        (x)   ->    Device.store[x]
 
   constructor: ({@name, @room, @channels}) ->
     Device.store[@name]   = @
@@ -18,19 +17,13 @@ exports.Device = class Device
   @discover: ({ga_catalog}) ->
 
     tree = analyze ga_catalog
-    # console.log "tree", tree, ga_catalog
     create_devices tree
-    subscribe_devices Device.store
 
   @find_type: (room, type) ->
     devices = []
     for name, device of Device.store
       devices.push device if device["is"+type]? and device.room == room
     return devices
-
-  subscribe_devices = (devices) ->
-    for name, device of devices
-      device.subscribe_channels()
 
   subscribe: (subscriber) ->
     @subscribers.push subscriber
@@ -39,21 +32,26 @@ exports.Device = class Device
     for subscriber in @subscribers
       subscriber @value, @timestamp
 
+  @receive: (payload) ->
+    if callbacks = Device.ko_callback[payload.ga]
+      for cb in callbacks
+        cb payload.number, payload.timestamp
+
   create_devices = (tree) ->
     for trade, rooms of tree
       for room, devices of rooms
-        for device, data of devices
-          config = { name: device, room: room, channels: data }
+        for name, data of devices
+          config = { name: name, room: room, channels: data }
 
-          switch trade
-            when "L", "B"
-              if data.brightness      then    new Dimmer  config
-              else                            new Light   config
-            when "W"                  then    new Socket  config
-            when "T"                  then    new TSensor config
-            when "H"                  then    new HSensor config
-            when "t"                  then    new Setpoint config
-            #   create_sensors rooms
+          device = (
+            switch trade
+              when "L", "B"
+                if data.brightness      then    new Dimmer  config
+                else                            new Light   config
+              when "W"                  then    new Socket  config
+              when "T"                  then    new TSensor config
+              when "H"                  then    new HSensor config
+              when "t"                  then    new Setpoint config
             # when "G" # gate car / pedestrian
             # when "J" # jalousie
             # when "P"
@@ -61,6 +59,9 @@ exports.Device = class Device
             # when "V"
             #   create_valves rooms
             # when "X"  # ignore
+            )
+          device.subscribe_channels()   if device
+
 
 
   analyze = (ga_catalog) ->
@@ -134,8 +135,8 @@ exports.Device = class Device
             false
             )
       if callback
-        KNX.find(data.ga).subscribe callback
-
+        Device.ko_callback[data.ga] ?= []
+        Device.ko_callback[data.ga].push callback
 
 # ===============================================================
 
