@@ -17,7 +17,7 @@ exports.Device = class Device
   @discover: ({ga_catalog}) ->
 
     tree = analyze ga_catalog
-    console.log "tree", tree
+    # console.log "tree", tree
     create_devices tree
 
   @find_type: (room, type) ->
@@ -30,10 +30,12 @@ exports.Device = class Device
     @subscribers.push subscriber
 
   refresh: ->
+    # console.log "refresh", @name, @channels, @subscribers
     for subscriber in @subscribers
       subscriber @value, @timestamp
 
   @receive: (payload) ->
+    # console.log "receive", payload
     if callbacks = Device.ko_callback[payload.ga]
       for cb in callbacks
         cb payload.number, payload.timestamp
@@ -118,11 +120,14 @@ exports.Device = class Device
         "default"
 
   set = (device) -> (value, timestamp) ->
-    device.set value, timestamp
+    if value?
+      device.set value, timestamp
+    else
+      console.warn "Device.set: undefined value", device.name
 
   set: (@value, @timestamp) ->
+    # console.log "dev rx", @name, @value
     @refresh()
-    # console.log "Device received", @value
 
   subscribe_channels: ->
     for channel, data of @channels

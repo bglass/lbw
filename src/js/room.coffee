@@ -30,14 +30,14 @@ exports.Room = class Room
 
 
   setup: (@name) ->
-    @socket          = Device.find_type @number, "socket"
+    @sockets          = Device.find_type @number, "socket"
     @tsensor         = Device.find_type @number, "tsensor"
     @tsetpoint       = Device.find_type @number, "tsetpoint"
-    @valve           = Device.find_type @number, "valve"
+    @valves           = Device.find_type @number, "valve"
     @lights          = Device.find_type @number, "light"
-    @light_dimmed    = Device.find_type @number, "dimmer"
+    @lights_dimmed    = Device.find_type @number, "dimmer"
 
-    @devices = [].concat @lights, @tsensor, @tsetpoint, @socket, @valve
+    @devices = [].concat @lights, @tsensor, @tsetpoint, @sockets, @valves
 
 
 
@@ -49,11 +49,12 @@ exports.Room = class Room
     for light in @lights
       light.subscribe update_color("stroke", "bulb"+light.name)
 
-    for light in @light_dimmed
-      id = light.name+"Dim"
+    for light in @lights_dimmed
+      id = "Dim" + light.name
       light.subscribe update_value(id)
 
-
+    for socket in @sockets
+      socket.subscribe update_color("stroke", "socket"+socket.name)
 
   switch_to: ->
 
@@ -78,17 +79,17 @@ exports.Room = class Room
       ko.refresh()
 
     # valves
-    if @valve?.length > 0
-      Gauge.setValue "RoomV": V: @valve[0].value
+    if @valves?.length > 0
+      Gauge.setValue "RoomV": V: @valves[0].value
 
       Gauge.show "RoomV"
     else
       Gauge.hide "RoomV"
 
     # lights and sockets
-    insert_icons  "#Rooms .SE", @socket,      "socket"
+    insert_icons  "#Rooms .SE", @sockets,      "socket"
     insert_icons  "#Rooms .NE", @lights,      "bulb"
-    insert_dimmer "#Rooms .E",  @light_dimmed
+    insert_dimmer "#Rooms .E",  @lights_dimmed
 
     @refresh()
 
@@ -122,6 +123,7 @@ exports.Room = class Room
     $element.empty().append value.toFixed(1)
 
   update_value = (element_name) -> (value, timestamp) ->
+    console.log "uv", element_name, value
     if element = $("#"+element_name)[0]
       element.value = value
 
@@ -133,11 +135,13 @@ exports.Room = class Room
 
 
   insert_dimmer = (selector, list) ->
-    $(selector).empty().append (sliders items: list)
+    names = list.map (x) -> "Dim" + x.name
+    $(selector).empty().append (sliders items: names)
 
   insert_icons = (selector, list, shape) ->
 
     cell = $(selector).empty()
+    # console.log "ii", shape, list
     src = iconbar(shape: shape, items: list)
     cell.append src
 
