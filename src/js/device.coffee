@@ -17,6 +17,7 @@ exports.Device = class Device
   @discover: ({ga_catalog}) ->
 
     tree = analyze ga_catalog
+    console.log "tree", tree
     create_devices tree
 
   @find_type: (room, type) ->
@@ -51,7 +52,7 @@ exports.Device = class Device
               when "W"                  then    new Socket  config
               when "T"                  then    new TSensor config
               when "H"                  then    new HSensor config
-              when "t"                  then    new Setpoint config
+              when "S"                  then    new Setpoint config
             # when "G" # gate car / pedestrian
             # when "J" # jalousie
             # when "P"
@@ -90,7 +91,7 @@ exports.Device = class Device
           "szene"
         else if d.setpoint and d.status
           "reply"
-        else if d.setpoint
+        else if d.value
           "brightness"
         else if d.status
           "status"

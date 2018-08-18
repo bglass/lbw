@@ -39,7 +39,6 @@ exports.Room = class Room
 
     @devices = [].concat @lights, @tsensor, @tsetpoint, @socket, @valve
 
-    # console.log "devices", @name, @devices
 
 
     for tsensor, i in @tsensor
@@ -58,14 +57,12 @@ exports.Room = class Room
 
   switch_to: ->
 
-
     # static text
     $("#Rooms .name").text @name
     $("#Rooms .number").text @number
 
     # temperature gauge
     if not @tsensor?.length > 0
-      console.log "tsensl", @tsensor
       Gauge.hide "RoomT"
       Gauge.hide_indicator "RoomT", "Needle1"
     else
@@ -96,7 +93,6 @@ exports.Room = class Room
     @refresh()
 
   refresh: ->
-    console.log "devs", @devices
     for device in @devices
       device.refresh()
 
@@ -127,7 +123,6 @@ exports.Room = class Room
 
   update_value = (element_name) -> (value, timestamp) ->
     if element = $("#"+element_name)[0]
-      # console.log "found", element
       element.value = value
 
   update_gauge = (gauge, quantity) -> (value, timestamp) ->
@@ -143,7 +138,6 @@ exports.Room = class Room
   insert_icons = (selector, list, shape) ->
 
     cell = $(selector).empty()
-    console.log "ii", list
     src = iconbar(shape: shape, items: list)
     cell.append src
 
