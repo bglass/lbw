@@ -42,9 +42,9 @@ exports.Room = class Room
 
 
     for tsensor, i in @tsensor
-      tsensor.subscribe update_gauge("RoomT", "T"+i )
+      tsensor.subscribe update_gauge(@number, "RoomT", "T"+i )
     for tsetpoint, i in @tsetpoint
-      tsetpoint.subscribe update_gauge("RoomT", "Tset"+i )
+      tsetpoint.subscribe update_gauge(@number, "RoomT", "Tset"+i )
 
     for light in @lights
       light.subscribe update_color("stroke", "bulb"+light.name)
@@ -57,6 +57,8 @@ exports.Room = class Room
       socket.subscribe update_color("stroke", "socket"+socket.name)
 
   switch_to: ->
+
+    Room.current_number = @number
 
     # static text
     $("#Rooms .name").text @name
@@ -105,7 +107,6 @@ exports.Room = class Room
     number = drop1st evt.currentTarget.id
     room   = Room.find number
     room.switch_to()
-    Room.current_number = number
 
 
   # also see https://codepen.io/kunukn/pen/pgqvpQ for a different, very nice design
@@ -123,15 +124,15 @@ exports.Room = class Room
     $element.empty().append value.toFixed(1)
 
   update_value = (element_name) -> (value, timestamp) ->
-    console.log "uv", element_name, value
     if element = $("#"+element_name)[0]
       element.value = value
 
-  update_gauge = (gauge, quantity) -> (value, timestamp) ->
-    data = {}
-    data[gauge] = {}
-    data[gauge][quantity] = {value: value, timestamp: timestamp}
-    Gauge.setValue data
+  update_gauge = (room, gauge, quantity) -> (value, timestamp) ->
+    if room == Room.current_number
+      data = {}
+      data[gauge] = {}
+      data[gauge][quantity] = {value: value, timestamp: timestamp}
+      Gauge.setValue data
 
 
   insert_dimmer = (selector, list) ->
