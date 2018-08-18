@@ -3,6 +3,7 @@ require '../css/main.css'
 {House} = require './house.coffee'
 {Room}  = require './room.coffee'
 {KNX} = require './knx.coffee'
+{Device} = require './device.coffee'
 
 {NodeRed} = require './node_red.coffee'
 time = require './time.coffee'
@@ -41,8 +42,8 @@ $ ->
 
   red = new NodeRed
 
-  red.subscribe_ga [ KNX.ga_setup, Room.setup, red.request_replay ]
-  red.subscribe    [ KNX.receive, house.receive, Room.receive ]
+  red.subscribe_ga [ KNX.ga_setup, Device.discover, Room.setup, red.request_replay ]
+  red.subscribe    [ KNX.receive, house.receive ]
 
 
 

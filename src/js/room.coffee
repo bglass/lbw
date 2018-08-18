@@ -2,6 +2,7 @@
 {Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
 
 {KNX}   =  require './knx.coffee'
+{Device}=  require './device.coffee'
 icon    =  require '../html/icons.pug'
 
 sliders =  require '../html/rooms/light_sliders.pug'
@@ -30,28 +31,34 @@ exports.Room = class Room
 
 
   setup: (@name) ->
-    @tsensor         = KNX.find_specific @number, "tsensor"
-    @tsetpoint       = KNX.find_specific @number, "tsetpoint"
+    # @socket          = KNX.find_specific @number, "socket"
+    # @tsensor         = KNX.find_specific @number, "tsensor"
+    # @tsetpoint       = KNX.find_specific @number, "tsetpoint"
+    # @valve           = KNX.find_specific @number, "valve"
 
-    @light_switched  = KNX.find_specific @number, "lswitched"
-    @light_dimmed    = KNX.find_specific @number, "ldimmed"
+    @socket          = Device.find_type @number, "socket"
+    @tsensor         = Device.find_type @number, "tsensor"
+    @tsetpoint       = Device.find_type @number, "tsetpoint"
+    @valve           = Device.find_type @number, "valve"
+    @lights          = Device.find_type @number, "light"
+    @light_dimmed    = Device.find_type @number, "dimmer"
 
-    @socket          = KNX.find_specific @number, "socket"
-    @valve           = KNX.find_specific @number, "valve"
+    @devices = [].concat @lights, @tsensor, @tsetpoint, @socket, @valve
 
-    for ko, i in @tsensor
-      ko.subscribe update_gauge("RoomT", "T"+i )
-    for ko, i in @tsetpoint
-      ko.subscribe update_gauge("RoomT", "Tset"+i )
+    # console.log "devices", @name, @devices
 
-    for ko in @light_switched
-      ko.subscribe update_color("stroke", "bulb"+ko.name)
 
-    for ko in @light_dimmed
-      id = ko.name.replace /~/, "Dim"
-      base_name = ko.name.replace /\.*~/, ""
-      base_ko   = KNX.findByName base_name
-      base_ko.subscribe update_value(id)
+    for tsensor, i in @tsensor
+      tsensor.subscribe update_gauge("RoomT", "T"+i )
+    for tsetpoint, i in @tsetpoint
+      tsetpoint.subscribe update_gauge("RoomT", "Tset"+i )
+
+    for light in @lights
+      light.subscribe update_color("stroke", "bulb"+light.name)
+
+    for light in @light_dimmed
+      id = light.name+"Dim"
+      light.subscribe update_value(id)
 
 
 
@@ -64,6 +71,7 @@ exports.Room = class Room
 
     # temperature gauge
     if not @tsensor?.length > 0
+      console.log "tsensl", @tsensor
       Gauge.hide "RoomT"
       Gauge.hide_indicator "RoomT", "Needle1"
     else
@@ -87,15 +95,16 @@ exports.Room = class Room
       Gauge.hide "RoomV"
 
     # lights and sockets
-    insert_icons  "#Rooms .SE", @socket,         "socket"
-    insert_icons  "#Rooms .NE", @light_switched, "bulb"
+    insert_icons  "#Rooms .SE", @socket,      "socket"
+    insert_icons  "#Rooms .NE", @lights,      "bulb"
     insert_dimmer "#Rooms .E",  @light_dimmed
 
-    for ko in @light_switched
-      ko.refresh()
-    for ko in @light_dimmed
-      ko.refresh()
+    @refresh()
 
+  refresh: ->
+    console.log "devs", @devices
+    for device in @devices
+      device.refresh()
 
   drop1st = (str) -> str.substr 1
 
@@ -106,19 +115,6 @@ exports.Room = class Room
     room   = Room.find number
     room.switch_to()
     Room.current_number = number
-
-  @receive: (payload) ->
-    if ko = KNX.find payload.ga
-      if ko.room == Room.current_number
-        if room = Room.find ko.room
-          room.receive payload
-
-  receive: (payload) ->
-
-    console.log "room #{@name} received update:", payload
-
-    # temperature gauge
-
 
 
   # also see https://codepen.io/kunukn/pen/pgqvpQ for a different, very nice design
@@ -153,6 +149,7 @@ exports.Room = class Room
   insert_icons = (selector, list, shape) ->
 
     cell = $(selector).empty()
+    console.log "ii", list
     src = iconbar(shape: shape, items: list)
     cell.append src
 

@@ -23,42 +23,14 @@ exports.KNX = class KNX
         # name, dpt, trade, room, subname, dimmer, setpoint, status
         ko[k] = v
 
-    KNX.forward_status_ko()
-
-    # console.log "call a.sub", a.subscribers[0](42)
-    # console.log "call b.sub", a.subscribers[0](88)
-
-
-
-
-  @forward_status_ko: ->
-    for ga, ko of KNX.store
-      if  (
-            (ko.trade == "L" and target_name = ko.name.replace /[=\?]+/, "") or
-            (target_name = ko.name.replace /\?/, "")
-          )
-        if target_name != ko.name
-          if target = KNX.findByName target_name
-            ko.subscribe forward(target)
-
-
-
-  forward = (ko) -> (value, timestamp) ->
-    ko.value = value
-    ko.timestamp = timestamp
-    # console.log "forwarding", ko.name, ko.value
-    ko.refresh()
-
   @receive: (payload) ->
     ko = KNX.find payload.ga
-    # console.log "knx rx", ko.name, payload.number, ko.subscribers
     if not ko
       console.log "todo: correct name in ETS:", payload
     else
       ko.receive payload
 
   receive: (payload) ->
-    # console.log "incoming", payload
     if defined payload.number
       @value      = payload.number
       @unit       = payload.unit
@@ -99,17 +71,6 @@ exports.KNX = class KNX
         when "tsetpoint"
           ko.trade == "T"     and
             ko.setpoint       and
-            not ko.status
-        when "lswitched"
-          ( ko.trade == "L"  or
-            ko.trade == "B")    and
-            not ko.dimmer       and
-            not ko.status       and
-            not ko.setpoint     and
-            not ko.szene
-        when "ldimmed"
-          ko.trade == "L"     and
-            ko.dimmer         and
             not ko.status
         when "socket"
           ko.trade == "W"     and
