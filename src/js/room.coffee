@@ -75,6 +75,14 @@ exports.Room = class Room
         Gauge.show_indicator "RoomT", "Needle1"
 
 
+    # setpoints
+    if @tsetpoint?.length > 0
+      Gauge.show_indicator "RoomT", "Setpoint"
+      console.log "sp show"
+    else
+      console.log "sp hide"
+      Gauge.hide_indicator "RoomT", "Setpoint"
+
     # valves
     if @valves?.length > 0
       # console.log "show valve", @valves[0].value, @valves[0].timestamp
