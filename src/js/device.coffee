@@ -1,7 +1,14 @@
+window.toggle = (device_name) ->
+  Device.find(device_name).toggle()
+
+window.slide_value = (device_name, value) ->
+  Device.find(device_name).slide_value value
+
 exports.Device = class Device
   @store        = {}
   @ko_callback  = {}
   @find:        (x)   ->    Device.store[x]
+
 
   constructor: ({@name, @room, @channels}) ->
     Device.store[@name]   = @
@@ -9,6 +16,9 @@ exports.Device = class Device
     @value                = 0
     @subscribers          = []
     @subname              = subname @channels
+
+  @uplink: (send) ->
+    Device.send = send
 
   subname = (channels) ->
     for c, data of channels
@@ -30,12 +40,37 @@ exports.Device = class Device
     @subscribers.push subscriber
 
   refresh: ->
-    # console.log "refresh", @name, @channels, @subscribers
-    for subscriber in @subscribers
-      subscriber @value, @timestamp
+    # if (Date.now()-@timestamp < 10*60*1000)
+    if (@timestamp > 0)
+      for subscriber in @subscribers
+        subscriber @value, @timestamp
+    else
+      @request_status()
+
+
+  request_status: ->
+
+    console.warn "Expired:", @name, @value, (Date.now()-@timestamp)/1000/60, "(minutes)"
+
+    channel = if @channels.value
+                @channels.value
+              else
+                @channels.status
+
+      # @channels.value   # if @isdimmer then @channels.brightness else @channels.switch
+
+
+    if channel
+
+      Device.send
+        topic: "knx: read"
+        payload: {dstgad: channel.ga}
+
+    else
+      console.log "rqs", @name, @channels
 
   @receive: (payload) ->
-    # console.log "receive", payload
+    # console.log "receive", payload, Device.ko_callback   # [payload.ga]
     if callbacks = Device.ko_callback[payload.ga]
       for cb in callbacks
         cb payload.number, payload.timestamp
@@ -49,18 +84,16 @@ exports.Device = class Device
           device = (
             switch trade
               when "L", "B"
-                if data.brightness      then    new Dimmer  config
-                else                            new Light   config
-              when "W"                  then    new Socket  config
-              when "T"                  then    new TSensor config
-              when "H"                  then    new HSensor config
-              when "S"                  then    new Setpoint config
+                if data.value           then    new Dimmer    config
+                else                            new Light     config
+              when "W"                  then    new Socket    config
+              when "T"                  then    new TSensor   config
+              when "H"                  then    new HSensor   config
+              when "S"                  then    new Setpoint  config
+              when "V"                  then    new Valve     config
             # when "G" # gate car / pedestrian
             # when "J" # jalousie
-            # when "P"
-            #   create_switches rooms
-            # when "V"
-            #   create_valves rooms
+            # when "P" # pumps
             # when "X"  # ignore
             )
           device.subscribe_channels()   if device
@@ -91,33 +124,34 @@ exports.Device = class Device
       when "L", "B", "W", "G", "P"
         if d.szene
           "szene"
-        else if d.setpoint and d.status
+        else if d.reply
           "reply"
         else if d.value
-          "brightness"
+          "value"
         else if d.status
           "status"
         else if d.dimmer
           "dimming"
         else
           "switch"
-      when "t"
-        if d.setpoint and d.status
-          "reply"
-        else if d.setpoint
-          "setpoint"
+      when "S"
+        if d.status
+          "value"
+        else
+          "preset"
       when "H", "T"
         if d.status
           "status"
         else
-          "sensor"
+          "value"
       when "V"
         if d.status
           "status"
         else
-          "valve"
+          "value"
       else
         "default"
+
 
   set = (device) -> (value, timestamp) ->
     if value?
@@ -126,14 +160,14 @@ exports.Device = class Device
       console.warn "Device.set: undefined value", device.name
 
   set: (@value, @timestamp) ->
-    # console.log "dev rx", @name, @value
+    # console.log "device rx", @name, @value, Date.now()-@timestamp
     @refresh()
 
   subscribe_channels: ->
     for channel, data of @channels
       callback = (
         switch channel
-          when "switch", "brightness", "status", "reply", "sensor", "valve"
+          when "switch", "brightness", "status", "reply", "value", "preset"
             set @
           # when "dimming"
           # when "szene"
@@ -146,11 +180,19 @@ exports.Device = class Device
 
 # ===============================================================
 
+exports.Valve = class Valve extends Device
+
+  isvalve: true
+
+
+# ------------------------------------------------------------------
+
 exports.Sensor = class Sensor extends Device
 
 # ------------------------------------------------------------------
 
 exports.TSensor = class Setpoint extends Sensor
+  istsetpoint: true
 
 # ------------------------------------------------------------------
 
@@ -167,6 +209,16 @@ exports.Switch = class Switch extends Device
 
   binary: ->
     return if @value then true else false
+
+  toggle: ->
+    Device.send
+      topic: "knx: write"
+      payload:
+        dstgad: @channels.switch.ga
+        value:  !@value
+        dpt:    "DPST-1-1"
+
+
 
 
 # ------------------------------------------------------------------
@@ -191,5 +243,17 @@ exports.Dimmer = class Dimmer extends Light
       else
         @value
         )
+
+  slide_value: (value) ->
+    Device.send
+      topic: "knx: write"
+      payload:
+        dstgad: @channels.value.ga
+        value:  2.55 * value
+        dpt:    "DPST-5-1"
+
+# console.log "wsv", device_name, value
+
+
 
 # ------------------------------------------------------------------

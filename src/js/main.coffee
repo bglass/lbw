@@ -44,7 +44,7 @@ $ ->
   red.subscribe_ga [ Device.discover, Room.setup, red.request_replay ]
   red.subscribe    [ Device.receive, house.receive ]
 
-
+  Device.uplink red.send
 
   # #Manually send a message back to Node-RED after 2 seconds
   # window.setTimeout (->

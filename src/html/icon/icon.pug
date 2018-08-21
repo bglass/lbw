@@ -17,8 +17,9 @@ mixin bulb
   line( x1 = cx+sr1  y1 = cy+sr1  x2 = cx+sr2  y2 = cy+sr2 )
 
 
-mixin icon(id, shape)
-  .icon
+mixin icon(shape, name)
+  - id = shape + name
+  .icon(onclick="window.toggle('"+name+"')")
     svg( viewBox="-5 -5 110 110" id=id stroke="black" fill="none")
       g(stroke-width="5" )
         +#{shape}

@@ -1,12 +1,13 @@
 # glass = require "glass-gauge"
 # Gauge = glass.Gauge
 
+suncalc = require './suncalc.js'
+
+
 {Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
 
 
-
 export add = ->
-
 
   Gauge.create
     "Time":
@@ -77,7 +78,22 @@ export add = ->
     Gauge.setValue      "Time": {M: m}
     Gauge.setValue      "Time": {S: s}
     #
-  setInterval tick, 500
+  setInterval tick, 1000
 
-  Gauge.setValue    "Time": {Dawn: 5}
-  Gauge.setValue    "Time": {Dusk: 20}
+  hours = (time) ->
+    time.getHours() + 
+    ( time.getMinutes() + 
+        time.getSeconds()/60 )/60
+
+  night_time = ->
+    noordwijk = suncalc.getTimes new Date(), 52.233405, 4.437712
+    Gauge.setValue    "Time": {Dawn: hours(noordwijk.sunrise) }
+    Gauge.setValue    "Time": {Dusk: hours(noordwijk.sunset)  }
+  # setInterval night_time, 1000   # 3h
+
+  night_time()
+
+  # noordwijk = suncalc.getTimes new Date(), 52.233405, 4.437712
+  # console.log "dusk", hours(noordwijk.sunset)
+  # Gauge.setValue    "Time": {Dawn: hours(noordwijk.sunrise) }
+  # Gauge.setValue    "Time": {Dusk: hours(noordwijk.sunset)  }

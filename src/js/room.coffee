@@ -10,7 +10,6 @@ iconbar =  require '../html/icon/bar.pug'
 exports.Room = class Room
 
   @current = ""
-
   @store = {}
   @find:  (x) ->    Room.store[x]
   @get:   (x) ->    if y = Room.find x then y else new Room(x)
@@ -28,23 +27,23 @@ exports.Room = class Room
       room = Room.get number
       room.setup(name)
 
-
   setup: (@name) ->
-    @sockets          = Device.find_type @number, "socket"
-    @tsensor         = Device.find_type @number, "tsensor"
-    @tsetpoint       = Device.find_type @number, "tsetpoint"
-    @valves           = Device.find_type @number, "valve"
-    @lights          = Device.find_type @number, "light"
-    @lights_dimmed    = Device.find_type @number, "dimmer"
+    @sockets        = Device.find_type @number, "socket"
+    @tsensor        = Device.find_type @number, "tsensor"
+    @tsetpoint      = Device.find_type @number, "tsetpoint"
+    @valves         = Device.find_type @number, "valve"
+    @lights         = Device.find_type @number, "light"
+    @lights_dimmed  = Device.find_type @number, "dimmer"
 
     @devices = [].concat @lights, @tsensor, @tsetpoint, @sockets, @valves
-
-
 
     for tsensor, i in @tsensor
       tsensor.subscribe update_gauge(@number, "RoomT", "T"+i )
     for tsetpoint, i in @tsetpoint
       tsetpoint.subscribe update_gauge(@number, "RoomT", "Tset"+i )
+    for valve, i in @valves
+      valve.subscribe update_gauge(@number, "RoomV", "V"+i)
+
 
     for light in @lights
       light.subscribe update_color("stroke", "bulb"+light.name)
@@ -58,7 +57,7 @@ exports.Room = class Room
 
   switch_to: ->
 
-    Room.current_number = @number
+    Room.current = @number
 
     # static text
     $("#Rooms .name").text @name
@@ -75,17 +74,13 @@ exports.Room = class Room
       else
         Gauge.show_indicator "RoomT", "Needle1"
 
-    for ko in @tsensor
-      ko.refresh()
-    for ko in @tsetpoint
-      ko.refresh()
 
     # valves
     if @valves?.length > 0
-      Gauge.setValue "RoomV": V: @valves[0].value
-
+      # console.log "show valve", @valves[0].value, @valves[0].timestamp
       Gauge.show "RoomV"
     else
+      # console.log "hide valve"
       Gauge.hide "RoomV"
 
     # lights and sockets
@@ -128,7 +123,8 @@ exports.Room = class Room
       element.value = value
 
   update_gauge = (room, gauge, quantity) -> (value, timestamp) ->
-    if room == Room.current_number
+    if room == Room.current
+      # console.log "UG", room, gauge, quantity, value, timestamp
       data = {}
       data[gauge] = {}
       data[gauge][quantity] = {value: value, timestamp: timestamp}
@@ -136,8 +132,8 @@ exports.Room = class Room
 
 
   insert_dimmer = (selector, list) ->
-    names = list.map (x) -> "Dim" + x.name
-    $(selector).empty().append (sliders items: names)
+    # names = list.map (x) -> "Dim" + x.name
+    $(selector).empty().append (sliders items: list)
 
   insert_icons = (selector, list, shape) ->
 
@@ -190,7 +186,7 @@ exports.Room = class Room
           v0:     0
           v1:     100
           quantity:
-            "V":
+            "V0":
               indicator:
                 "Bar":
                   type: "bar"

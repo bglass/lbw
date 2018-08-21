@@ -42,11 +42,12 @@ exports.House = class House
 
 
   receive: (payload) ->
-    room = payload.name.substr 1,3
-    dot  = payload.name.substr 4,1
-    rest = payload.name.substr 4
+    if payload.name
+      room = payload.name.substr 1,3
+      dot  = payload.name.substr 4,1
+      rest = payload.name.substr 4
 
-    switch payload.dpst
-      when "9-1" # Temperature [dC]
-        if payload.number and (dot == '.' or rest.length == 0)
-          update_temperature room, payload.number, payload.unit
+      switch payload.dpst
+        when "9-1" # Temperature [dC]
+          if payload.number and (dot == '.' or rest.length == 0)
+            update_temperature room, payload.number, payload.unit

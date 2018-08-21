@@ -12,6 +12,7 @@ exports.NodeRed = class NodeRed
 
 
   send:  (msg) ->
+    console.log "NR send", msg
     uibuilder.send msg
 
   sendCtrl: (msg) ->
