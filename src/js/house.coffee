@@ -1,3 +1,5 @@
+{Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
+
 exports.House = class House
 
   setup: ({rooms, target}) ->
@@ -5,6 +7,7 @@ exports.House = class House
       update number, "name", name
       update number, "number", number
       link_to number, target
+    insert_barometer()
 
   select = (room, subclass) ->
     $(".roomWrap#R#{room} .#{subclass}")
@@ -26,9 +29,9 @@ exports.House = class House
     rl = 1 if rl>1
     return rl
 
-  temp2color = (v) ->
+  temp2color = (v, a=1) ->
     rl = limited_relative v
-    return "hsl(#{200*(1-rl)}, 80%, 50%)"
+    return "hsla(#{200*(1-rl)}, 80%, 50%, #{a})"
 
   update_temperature = (room, number, unit) ->
     update room, "temperature", number.toFixed(1)
@@ -39,7 +42,17 @@ exports.House = class House
     select(room, "room").css('background-color', color);
 
 
+  weather: (payload) ->
+    console.log "House received weather update", payload
 
+    dir   = payload.winddirection
+    speed = 2*Math.log(1+payload.windspeed)
+
+    $("#wind #pointer")[0].setAttribute "transform", "rotate(#{dir}) scale(#{speed})"
+    Gauge.setValue barometer: P0: payload.pressure
+
+    color = temp2color payload.tempc, 0.1
+    $("#House .background").css('background-color', color);
 
   receive: (payload) ->
     if payload.name
@@ -51,3 +64,36 @@ exports.House = class House
         when "9-1" # Temperature [dC]
           if payload.number and (dot == '.' or rest.length == 0)
             update_temperature room, payload.number, payload.unit
+
+
+
+  insert_barometer = ->
+    Gauge.create
+      "barometer":
+        title:    ""
+        scale:    "S1":
+          presets:   ["Room_Temperature", "Ticks_Left"]
+          label:  "P"
+          unit:   "mbar"
+          v0:     960
+          v1:     1060
+          track:  color: "none"
+          tick:
+            v0:   960
+            v1:   1060
+            divisions:  10
+          subtick:
+            v0:   960
+            v1:   1060
+            divisions:  50
+          number:
+            v0:     960
+            v1:     1060
+            divisions: 5
+          type:     "horseshoe"
+          quantity:
+            "P0":
+              indicator:
+                "Needle0":
+                  type:       "pointer"
+                  shape:      "needle1"

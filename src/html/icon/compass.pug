@@ -1,6 +1,6 @@
 - R = 7
-- wind_angle = 200
-- wind_force = 5
+//- wind_angle = 0
+//- wind_force = 1
 
 mixin triangle
   polygon( points=`0,0  1, 1 0,${R}`)
@@ -20,6 +20,7 @@ svg( viewBox=`${-1.1*R} ${-1.1*R} ${2.2*R} ${2.2*R}` stroke="black" fill="none" 
   g(transform="rotate(45) scale(0.8)")
     +star
   +star
-  g(transform=`scale(${wind_force}) rotate(${wind_angle})` fill="red", stroke="none")
-    polygon( points="0,1 -0.1,0 0.1,0" )
+  //- transform=`scale(${wind_force}) rotate(${wind_angle})`
+  g(id="pointer"  fill="orange", stroke="none")
+    polygon( points="0,-1 -0.2,-0.1 0,0 0.2,-0.1" )
   

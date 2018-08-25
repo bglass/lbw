@@ -6,8 +6,7 @@ exports.NodeRed = class NodeRed
     initial_set()
     uibuilder.debug false
     @debug = false
-    @receivers = []
-    @ga_setup = []
+    @receivers = {}
     @attach_events()
 
 
@@ -27,11 +26,12 @@ exports.NodeRed = class NodeRed
     $('#feVersion').text uibuilder.get('version')
 
 
-  subscribe: (receivers) ->
-    @receivers = @receivers.concat receivers
+  subscribe: (topic, receivers) ->
+    @receivers[topic] ?= []
+    @receivers[topic] = @receivers[topic].concat receivers
 
-  subscribe_ga: (receivers) ->
-    @ga_setup = @ga_setup.concat receivers
+  # subscribe_ga: (receivers) ->
+  #   @ga_setup = @ga_setup.concat receivers
 
 
   request_replay: (_) =>
@@ -49,13 +49,18 @@ exports.NodeRed = class NodeRed
         console.dir msg
       $('#showMsg').text JSON.stringify(msg)
 
-      switch msg.topic
-        when "dpt"
-          for rx in @receivers
-            rx msg.payload
-        when "GA"
-          for rx in @ga_setup
-            rx msg.payload
+      if @receivers[msg.topic]?
+        for rx in @receivers[msg.topic]
+          rx msg.payload
+
+
+      # switch msg.topic
+      #   when "dpt"
+      #     for rx in @receivers
+      #       rx msg.payload
+      #   when "GA"
+      #     for rx in @ga_setup
+      #       rx msg.payload
 
 
 

@@ -41,8 +41,9 @@ $ ->
 
   red = new NodeRed
 
-  red.subscribe_ga [ Device.discover, Room.setup, red.request_replay ]
-  red.subscribe    [ Device.receive, house.receive ]
+  red.subscribe "GA",       [ Device.discover, Room.setup, red.request_replay ]
+  red.subscribe "dpt",      [ Device.receive, house.receive ]
+  red.subscribe "weather",  [ house.weather ]
 
   Device.uplink red.send
 
