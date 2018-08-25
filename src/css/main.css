@@ -1,0 +1,16 @@
+.screen {
+  height: 75vw;
+  border: 1px solid #0f0;
+}
+
+#Time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height:   66vw;
+}
+
+#time {
+  width:    65vw;
+  height:   65vw;
+}

@@ -5,26 +5,27 @@ mixin button(target)
   button.tablinks(id= "btn"+target 
     onclick='tab_select(event, "'+target+'")')= target
 
+.screen
 
-.tab
-  +button("Time")
-  +button("House")
-  +button("Rooms")
-  +button("Heating")
-  +button("Climate")
-  +button("Phone")
-  +button("Debug")
-  
-#Debug.tabcontent
-  include debug
+  .tab
+    +button("Time")
+    +button("House")
+    +button("Rooms")
+    +button("Heating")
+    +button("Climate")
+    +button("Phone")
+    +button("Debug")
+    
+  #Debug.tabcontent
+    include debug
 
-#Time.tabcontent
+  #Time.tabcontent
+    #time
+  #House.tabcontent
+    include house
 
-#House.tabcontent
-  include house
+  #Rooms.tabcontent
+    include rooms
 
-#Rooms.tabcontent
-  include rooms
-
-#Heating.tabcontent
-  include icon/castle
+  #Heating.tabcontent
+    include icon/castle

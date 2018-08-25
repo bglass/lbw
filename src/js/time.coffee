@@ -10,7 +10,7 @@ suncalc = require './suncalc.js'
 export add = ->
 
   Gauge.create
-    "Time":
+    "time":
       title:    ""
       scale:    "clk":
         presets:   ["Clock"]
@@ -74,9 +74,9 @@ export add = ->
     h12 = time.getHours() %% 12 + m/60
     h24 = time.getHours()       + m/60
     #
-    Gauge.setValue      "Time": {H: h24 }
-    Gauge.setValue      "Time": {M: m}
-    Gauge.setValue      "Time": {S: s}
+    Gauge.setValue      "time": {H: h24 }
+    Gauge.setValue      "time": {M: m}
+    Gauge.setValue      "time": {S: s}
     #
   setInterval tick, 1000
 
@@ -88,13 +88,13 @@ export add = ->
   night_time = ->
     noordwijk = suncalc.getTimes new Date(), 52.233405, 4.437712
     console.log "NWZH", noordwijk
-    Gauge.setValue    "Time": {Dawn: hours(noordwijk.sunrise) }
-    Gauge.setValue    "Time": {Dusk: hours(noordwijk.sunset)  }
+    Gauge.setValue    "time": {Dawn: hours(noordwijk.sunrise) }
+    Gauge.setValue    "time": {Dusk: hours(noordwijk.sunset)  }
   # setInterval night_time, 1000   # 3h
 
   night_time()
 
   # noordwijk = suncalc.getTimes new Date(), 52.233405, 4.437712
   # console.log "dusk", hours(noordwijk.sunset)
-  # Gauge.setValue    "Time": {Dawn: hours(noordwijk.sunrise) }
-  # Gauge.setValue    "Time": {Dusk: hours(noordwijk.sunset)  }
+  # Gauge.setValue    "time": {Dawn: hours(noordwijk.sunrise) }
+  # Gauge.setValue    "time": {Dusk: hours(noordwijk.sunset)  }
