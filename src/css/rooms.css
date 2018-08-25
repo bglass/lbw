@@ -1,7 +1,7 @@
 #Rooms {
   display: grid;
-  grid-template-columns: 16.6% 66.6% 16.6%;
-  /* grid-template-rows: repeat(6, 8%); */
+  grid-template-columns: 25% 50% 25%;
+  grid-template-rows: 15% 70% 15%;
   /* grid-gap:    1vw; */
   width: 100%;
   overflow:hidden;
@@ -15,7 +15,7 @@
 .iconbar {
   display: flex;
   align-items: center;
-  justify-content:space-between;
+  justify-content:space-evenly;
   align-content: center;
   height: 100%;
 
@@ -45,6 +45,7 @@
 }
 .sliders {
   display: flex;
+  justify-content:space-evenly;
   height: 100%;
 }
 

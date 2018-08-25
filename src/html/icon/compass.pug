@@ -1,0 +1,25 @@
+- R = 7
+- wind_angle = 200
+- wind_force = 5
+
+mixin triangle
+  polygon( points=`0,0  1, 1 0,${R}`)
+
+mixin edges
+  for a in [0,90,180,270]
+    g(transform=`rotate(${a})`)
+      +triangle
+
+mixin star
+  g(fill="black")
+    +edges
+  g(fill="white" transform="scale(-1,1)")
+    +edges
+
+svg( viewBox=`${-1.1*R} ${-1.1*R} ${2.2*R} ${2.2*R}` stroke="black" fill="none" stroke-width=0.1 stroke-linejoin="arcs")
+  g(transform="rotate(45) scale(0.8)")
+    +star
+  +star
+  g(transform=`scale(${wind_force}) rotate(${wind_angle})` fill="red", stroke="none")
+    polygon( points="0,1 -0.1,0 0.1,0" )
+  

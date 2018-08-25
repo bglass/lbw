@@ -3,6 +3,10 @@
   border: 1px solid #0f0;
 }
 
+.tabcontent {
+  height:   66vw;
+}
+
 #Time {
   display: flex;
   align-items: center;
@@ -12,5 +16,4 @@
 
 #time {
   width:    65vw;
-  height:   65vw;
 }

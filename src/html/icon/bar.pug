@@ -2,7 +2,7 @@ include icon
 
 .iconbar
   for item in items
-    .iconcell( style="width: "+ 90/(items.length) +"%;")
+    .iconcell( style="width: "+ 90/(items.length)/1.5 +"%;")
       +icon(shape, item.name)
       p=item.subname
       
