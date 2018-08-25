@@ -1,10 +1,40 @@
 #House {
+  width: 100%;
+  height: 66%;
+  padding-bottom: 66%;
+}
+
+/* #house {
+  width: 100%;
+  height: 100%;
+} */
+
+
+#House .foreground {
   display: grid;
-  grid-template-columns: repeat(12, 8%);
+  grid-template-columns: repeat(12, 8.33%);
   grid-template-rows: repeat(6, 8%);
   /* grid-gap:    1vw; */
   width: 100%;
   overflow:hidden;
+  position: relative;
+  top: -33.1vw;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+
+
+}
+
+#House .background {
+  position: relative;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
 }
 
 .dataGrid {
@@ -24,9 +54,10 @@
   width: 100%;
   padding-top: 100%;
   position: relative;
-  border: 1px solid black;
+  /* border: 1px solid #fafafa; */
 
   cursor: pointer;
+
 
 }
 .dataWrap {
@@ -41,15 +72,16 @@
 
 .room {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 90%;
   text-align:center;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 1vw;
+  margin: auto;
 }
 
 .dataCell {
@@ -92,11 +124,11 @@
 
 #R201   { grid-row:  3;   grid-column: 2 }
 #R202   { grid-row:  3;   grid-column: 3 }
-#R203   { grid-row:  3;   grid-column: 5 }
+#R203   { grid-row:  3;   grid-column: 4 }
 #R211   { grid-row:  3;   grid-column: 9 }
 #R212   { grid-row:  3;   grid-column: 10}
 
-#R100   { grid-row:  3;   grid-column: 4 }
+#R100   { grid-row:  5;   grid-column: 4 }
 #R101   { grid-row:  4;   grid-column: 2 }
 #R102   { grid-row:  4;   grid-column: 4 }
 #R103   { grid-row:  4;   grid-column: 5 }
@@ -106,8 +138,8 @@
 
 #R001   { grid-row:  5;   grid-column: 2 }
 #R008   { grid-row:  5;   grid-column: 3 }
-#R005   { grid-row:  5;   grid-column: 4 }
-#R004   { grid-row:  5;   grid-column: 5 }
+#R005   { grid-row:  5;   grid-column: 5 }
+#R004   { grid-row:  6;   grid-column: 5 }
 #R006   { grid-row:  5;   grid-column: 6 }
 #R007   { grid-row:  5;   grid-column: 7 }
 #R011   { grid-row:  5;   grid-column: 8 }

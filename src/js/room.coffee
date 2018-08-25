@@ -1,9 +1,8 @@
 # Gauge   = (require "glass-gauge").Gauge
 {Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
-
 {Device}=  require './device.coffee'
-icon    =  require '../html/icons.pug'
 
+icon    =  require '../html/icons.pug'
 sliders =  require '../html/rooms/light_sliders.pug'
 iconbar =  require '../html/icon/bar.pug'
 
@@ -78,9 +77,7 @@ exports.Room = class Room
     # setpoints
     if @tsetpoint?.length > 0
       Gauge.show_indicator "RoomT", "Setpoint"
-      console.log "sp show"
     else
-      console.log "sp hide"
       Gauge.hide_indicator "RoomT", "Setpoint"
 
     # valves
