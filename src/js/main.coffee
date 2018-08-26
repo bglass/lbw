@@ -1,6 +1,6 @@
 require '../css/main.css'
 
-{House} = require './house.coffee'
+# {House} = require './house.coffee'
 {Room}  = require './room.coffee'
 {Device} = require './device.coffee'
 {Weather} = require './weather.coffee'
@@ -23,9 +23,6 @@ rooms = {
   "201": "Office",  "2201": "Noordwijk"
 }
 
-
-
-
 $ ->
 
   tab = if    hash = window.location.hash.substr 1 then hash else  "House"
@@ -33,37 +30,15 @@ $ ->
 
   time.add()
 
-  house   = new House
   weather = new Weather
   red     = new NodeRed
-
-  house.setup
-    rooms:  rooms
-    target: Room.goto
 
   Room.create rooms
 
   red.subscribe "GA",       [ Device.discover, Room.setup, red.request_replay ]
-  red.subscribe "dpt",      [ Device.receive, house.receive ]
+  red.subscribe "dpt",      [ Device.receive ]
   red.subscribe "weather",  [ Weather.receive ]
 
   Device.uplink red.send
 
-  weather.subscribe house.weather
-
-
-
-
-  # #Manually send a message back to Node-RED after 2 seconds
-  # window.setTimeout (->
-  #   console.info 'Sending a message back to Node-RED - after 2s delay'
-  #   console.info "Yo!"
-  #   red.send
-  #     'topic': 'uibuilderfe'
-  #     'payload': 'I am a message sent from the uibuilder front end'
-  # ), 2000
-
-  # Manually send a control message. Include cacheControl:REPLAY to test cache handling
-  # Shouldn't be needed in this example since window.load will also send cacheControl and we should
-  # be done before then.
-  # red.sendCtrl 'cacheControl': 'REPLAY'
+  weather.subscribe Room.outdoor

@@ -15,54 +15,103 @@ exports.Room = class Room
 
   constructor: (@number) ->
     Room.store[@number] = @
+    @subscribers        = []
+    @data =
+      temperature: 0
+      brightness:  0
+      motion:      false
+      valve:       0
 
   @create: (rooms) ->
     Room.rooms = rooms
     insert_temperature_gauge()
     insert_valve_gauge()
 
+
+  select = (room, subclass) ->
+    $(".roomWrap#R#{room} .#{subclass}")
+
+  link_to = (room, target) ->
+    $("#R"+room).click(target)
+
+  update_data_cell = (room, subclass, text) ->
+    select(room, subclass).empty().append text
+
+  relative_temperature = (v) ->
+    v0 = 10
+    v1 = 30
+    return  (v-v0) / (v1-v0)
+
+  limited_relative = (v) ->
+    rl = relative_temperature v
+    rl = 0 if rl<0
+    rl = 1 if rl>1
+    return rl
+
+  temp2color = (v, a=1) ->
+    rl = limited_relative v
+    return "hsla(#{200*(1-rl)}, 80%, 50%, #{a})"
+
+  set_color = (room, color) ->
+    select(room, "room").css('background-color', color);
+
+
+
+
+
   @setup: (payload) ->
     for number, name of Room.rooms
       room = Room.get number
       room.setup(name)
 
+
   setup: (@name) ->
-    @sockets        = Device.find_type @number, "socket"
-    @tsensor        = Device.find_type @number, "tsensor"
-    @tsetpoint      = Device.find_type @number, "tsetpoint"
-    @valves         = Device.find_type @number, "valve"
-    @lights         = Device.find_type @number, "light"
-    @lights_dimmed  = Device.find_type @number, "dimmer"
-    @motions        = Device.find_type @number, "motion"
+    @devices = find_devices @number
+    subscribe_to @devices, @number
 
+    # decorate the house
+    update_data_cell @number, "name", @name
+    update_data_cell @number, "number", @number
+    link_to @number, goto
 
+  find_devices = (room) ->
+    sockets:        Device.find_type room, "socket"
+    tsensor:        Device.find_type room, "tsensor"
+    tsetpoint:      Device.find_type room, "tsetpoint"
+    valves:         Device.find_type room, "valve"
+    lights:         Device.find_type room, "light"
+    lights_dimmed:  Device.find_type room, "dimmer"
+    motions:        Device.find_type room, "motion"
 
-    @devices = [].concat @lights, @tsensor, @tsetpoint, @sockets, @valves, @motions
-
-    for tsensor, i in @tsensor
-      tsensor.subscribe update_gauge(@number, "RoomT", "T"+i )
-    for tsetpoint, i in @tsetpoint
-      tsetpoint.subscribe update_gauge(@number, "RoomT", "Tset"+i )
-    for valve, i in @valves
-      valve.subscribe update_gauge(@number, "RoomV", "V"+i)
-
-
-    for light in @lights
+  subscribe_to = (devices, room) ->
+    for socket in devices.sockets
+      socket.subscribe update_color("stroke", "socket"+socket.name)
+    for tsensor, i in devices.tsensor
+      tsensor.subscribe update_gauge(room, "RoomT", "T"+i )
+      tsensor.subscribe update_summary_temperature(room) if i==0
+    for tsetpoint, i in devices.tsetpoint
+      tsetpoint.subscribe update_gauge(room, "RoomT", "Tset"+i )
+    for valve, i in devices.valves
+      valve.subscribe update_gauge(room, "RoomV", "V"+i)
+    for light in devices.lights
       light.subscribe update_color("stroke", "bulb"+light.name)
-
-    for light in @lights_dimmed
+    for light in devices.lights_dimmed
       id = "Dim" + light.name
       light.subscribe update_value(id)
-
-    for socket in @sockets
-      socket.subscribe update_color("stroke", "socket"+socket.name)
-
-    for motion in @motions
+    for motion in devices.motions
       uv = update_visibility("feet"+motion.name)
+
       motion.subscribe uv
 
+  subscribe: (subscriber) ->
+    @subscribers.push subscriber
+
+  refresh: ->
+    for subscriber in @subscribers
+      subscriber @data
 
   switch_to: ->
+
 
     Room.current = @number
 
@@ -71,46 +120,47 @@ exports.Room = class Room
     $("#Rooms .number").text @number
 
     # temperature gauge
-    if not @tsensor?.length > 0
+    if not @devices.tsensor?.length > 0
       Gauge.hide "RoomT"
       Gauge.hide_indicator "RoomT", "Needle1"
     else
       Gauge.show "RoomT"
-      if @tsensor.length == 1
+      if @devices.tsensor.length == 1
         Gauge.hide_indicator "RoomT", "Needle1"
       else
         Gauge.show_indicator "RoomT", "Needle1"
 
 
     # setpoints
-    if @tsetpoint?.length > 0
+    if @devices.tsetpoint?.length > 0
       Gauge.show_indicator "RoomT", "Setpoint"
     else
       Gauge.hide_indicator "RoomT", "Setpoint"
 
     # valves
-    if @valves?.length > 0
-      # console.log "show valve", @valves[0].value, @valves[0].timestamp
+    if @devices.valves?.length > 0
+      # console.log "show valve", @devices.valves[0].value, @devices.valves[0].timestamp
       Gauge.show "RoomV"
     else
       # console.log "hide valve"
       Gauge.hide "RoomV"
 
     # lights and sockets
-    insert_icons  "#Rooms .SE", @sockets,      "socket"
-    insert_icons  "#Rooms .NE", @lights,      "bulb"
-    insert_dimmer "#Rooms .E",  @lights_dimmed
-    insert_icons  "#Rooms .W",  @motions, "feet"
+    insert_icons  "#Rooms .SE", @devices.sockets,      "socket"
+    insert_icons  "#Rooms .NE", @devices.lights,      "bulb"
+    insert_dimmer "#Rooms .E",  @devices.lights_dimmed
+    insert_icons  "#Rooms .W",  @devices.motions, "feet"
 
     @refresh()
 
   refresh: ->
-    for device in @devices
-      device.refresh()
+    for type, devices of @devices
+      for device in devices
+        device.refresh()
 
   drop1st = (str) -> str.substr 1
 
-  @goto: (evt) ->
+  goto = (evt) ->
     $("#btnRooms").click();
     history.pushState {}, "Rooms", "#Rooms"
     number = drop1st evt.currentTarget.id
@@ -121,7 +171,7 @@ exports.Room = class Room
   # also see https://codepen.io/kunukn/pen/pgqvpQ for a different, very nice design
 
   update_color = (attribute, element_name) -> (raw_value, timestamp) ->
-
+    console.log "uc", @name
     if typeof raw_value == 'boolean'
       value = if raw_value then 60 else 0
     else
@@ -130,12 +180,8 @@ exports.Room = class Room
       element.setAttribute attribute, "hsl(50, 100%, #{value}%)"
 
   update_visibility = (element_name) -> (visibility, timestamp) ->
-    console.log "uv", element_name, visibility
     for e in $("#"+element_name)
       e.setAttribute "visibility", (if visibility then "visible" else "hidden")
-
-
-
 
   update_text  = (element) -> (value, timestamp) ->
     $element.empty().append value.toFixed(1)
@@ -152,6 +198,11 @@ exports.Room = class Room
       data[gauge][quantity] = {value: value, timestamp: timestamp}
       Gauge.setValue data
 
+  update_summary_temperature = (room) -> (value, timestamp) ->
+    update_data_cell room, "temperature", value.toFixed(1)
+    update_data_cell room, "unit", "°C"
+    set_color room, temp2color value
+
 
   insert_dimmer = (selector, list) ->
     # names = list.map (x) -> "Dim" + x.name
@@ -163,6 +214,29 @@ exports.Room = class Room
     # console.log "ii", shape, list
     src = iconbar(shape: shape, items: list)
     cell.append src
+
+  @outdoor: (data) ->
+    dir   = data.wind.direction
+    speed = Math.log(1 + data.wind.speed)
+
+    $("#wind #pointer")[0].setAttribute "transform", "rotate(#{dir}) scale(#{speed * 2})"
+
+    west_east = if (dir < 180) then -1 else 1
+    for flag in $(".windvane")
+      flag.setAttribute("points", "0,-0.5 #{west_east * speed/5},-0.4 0 -0.3");
+
+    color = temp2color data.temperature, 0.1
+    $("#House .background").css 'background-color', color
+
+    color = temp2color data.temperature
+    $("#R2201").css 'background-color', color
+
+    $("#R2201 .temperature").empty().append data.temperature
+    $("#R2201 .unit").empty().append "°C"
+
+    console.log "wrx"
+
+
 
   insert_temperature_gauge = ->
     Gauge.create
