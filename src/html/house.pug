@@ -22,6 +22,13 @@ mixin temperature
         .temperature
         .unit
 
+mixin weather
+  .weatherWrap.bottomrow
+    .dataCell
+      .verticalCenter
+        .weather
+          img
+            
 mixin room(id)
   .roomWrap(id=id)
     .room
@@ -35,6 +42,19 @@ mixin room(id)
         +data("SW")
         +data("S")
         +data("SE")
+
+mixin outdoor(id)
+  .roomWrap(id=id)
+    .room
+      .dataGrid
+        +room_info
+        +data("N")
+        +data("NE")
+        +data("W")
+        +temperature
+        +data("E")
+        +weather
+
 
 #house
   .background
@@ -68,7 +88,7 @@ mixin room(id)
     +room("x2")
     +room("x3")
     
-    +room("R2201")
+    +outdoor("R2201")
     
     #wind
       include icon/compass

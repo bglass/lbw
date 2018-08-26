@@ -71,6 +71,18 @@
   /* border: 1px solid black; */
 }
 
+.weatherWrap {
+  height: 0;
+  /* overflow: hidden; */
+
+  width: 100%;
+  padding-top: 33.3%;
+  position: relative;
+  /* border: 1px solid black; */
+}
+
+
+
 .room {
   position: absolute;
   top: 5%;
@@ -121,6 +133,10 @@
 .room .number, .room .unit{
   font-size: 0.5vw;
 
+}
+
+.bottomrow {
+  grid-column: span 3;
 }
 
 .nothing {

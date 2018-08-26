@@ -1,10 +1,9 @@
 # Gauge   = (require "glass-gauge").Gauge
 {Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
-{Device}=  require './device.coffee'
 
-icon    =  require '../html/icons.pug'
-sliders =  require '../html/rooms/light_sliders.pug'
-iconbar =  require '../html/icon/bar.pug'
+icon    = require '../html/icons.pug'
+sliders = require '../html/rooms/light_sliders.pug'
+iconbar = require '../html/icon/bar.pug'
 
 exports.Room = class Room
 
@@ -27,6 +26,8 @@ exports.Room = class Room
     insert_temperature_gauge()
     insert_valve_gauge()
 
+  @set_find_devices: (f) ->
+    Room.find_devices = f
 
   select = (room, subclass) ->
     $(".roomWrap#R#{room} .#{subclass}")
@@ -56,14 +57,10 @@ exports.Room = class Room
     select(room, "room").css('background-color', color);
 
 
-
-
-
   @setup: (payload) ->
     for number, name of Room.rooms
       room = Room.get number
       room.setup(name)
-
 
   setup: (@name) ->
     @devices = find_devices @number
@@ -75,13 +72,13 @@ exports.Room = class Room
     link_to @number, goto
 
   find_devices = (room) ->
-    sockets:        Device.find_type room, "socket"
-    tsensor:        Device.find_type room, "tsensor"
-    tsetpoint:      Device.find_type room, "tsetpoint"
-    valves:         Device.find_type room, "valve"
-    lights:         Device.find_type room, "light"
-    lights_dimmed:  Device.find_type room, "dimmer"
-    motions:        Device.find_type room, "motion"
+    sockets:        Room.find_devices room, "socket"
+    tsensor:        Room.find_devices room, "tsensor"
+    tsetpoint:      Room.find_devices room, "tsetpoint"
+    valves:         Room.find_devices room, "valve"
+    lights:         Room.find_devices room, "light"
+    lights_dimmed:  Room.find_devices room, "dimmer"
+    motions:        Room.find_devices room, "motion"
 
   subscribe_to = (devices, room) ->
     for socket in devices.sockets
@@ -221,9 +218,12 @@ exports.Room = class Room
 
     $("#wind #pointer")[0].setAttribute "transform", "rotate(#{dir}) scale(#{speed * 2})"
 
-    west_east = if (dir < 180) then -1 else 1
-    for flag in $(".windvane")
-      flag.setAttribute("points", "0,-0.5 #{west_east * speed/5},-0.4 0 -0.3");
+    northerly = Math.cos(dir*Math.PI/180)
+    westerly  = - Math.sin(dir*Math.PI/180)
+
+    flag = $(".windvane")
+    flag[0].setAttribute("points", "0,-0.5 #{northerly * speed/5},-0.4 0 -0.3");
+    flag[1].setAttribute("points", "0,-0.5 #{westerly * speed/5},-0.4 0 -0.3");
 
     color = temp2color data.temperature, 0.1
     $("#House .background").css 'background-color', color
@@ -233,6 +233,9 @@ exports.Room = class Room
 
     $("#R2201 .temperature").empty().append data.temperature
     $("#R2201 .unit").empty().append "°C"
+
+    iconurl = "http://openweathermap.org/img/w/#{data.icon}.png"
+    $('.weather img').attr 'src', iconurl
 
     console.log "wrx"
 

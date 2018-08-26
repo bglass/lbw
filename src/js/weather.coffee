@@ -23,7 +23,10 @@ exports.Weather = class Weather
     @data.wind.speed     = payload.windspeed
     @data.temperature    = payload.tempc
     @data.pressure       = payload.pressure
+    @data.text           = payload.weather
+    @data.icon           = payload.icon
     @data.timestamp      = Date.now()
+
 
     @refresh()
 

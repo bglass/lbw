@@ -30,8 +30,8 @@ $ ->
 
   time.add()
 
-  weather = new Weather
   red     = new NodeRed
+  weather = new Weather
 
   Room.create rooms
 
@@ -40,5 +40,7 @@ $ ->
   red.subscribe "weather",  [ Weather.receive ]
 
   Device.uplink red.send
+  Room.set_find_devices Device.find_type
+
 
   weather.subscribe Room.outdoor
