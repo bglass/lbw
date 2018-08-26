@@ -133,7 +133,7 @@
 
 #wind      { grid-row:  1 / span 2;   grid-column: 6 / span 2}
 #barometer { grid-row:  1 / span 1;   grid-column: 8 / span 1}
-#x1 { grid-row:  1;   grid-column: 1 }
+#R2201 { grid-row:  1;   grid-column: 1 }
 #x2 { grid-row:  2;   grid-column: 1 }
 #x3 { grid-row:  3;   grid-column: 1 }
 

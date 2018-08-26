@@ -3,6 +3,7 @@ require '../css/main.css'
 {House} = require './house.coffee'
 {Room}  = require './room.coffee'
 {Device} = require './device.coffee'
+{Weather} = require './weather.coffee'
 
 {NodeRed} = require './node_red.coffee'
 time = require './time.coffee'
@@ -19,7 +20,7 @@ rooms = {
   "100": "Hall",    "111": "Library",   "112": "Studio",
   "202": "Top",     "203": "Jane",      "211": "Vide",
   "212": "Cave",    "K03": "Crawl",     "K05": "Crawl",
-  "201": "Office"
+  "201": "Office",  "2201": "Noordwijk"
 }
 
 
@@ -32,20 +33,26 @@ $ ->
 
   time.add()
 
-  house = new House
+  house   = new House
+  weather = new Weather
+  red     = new NodeRed
+
   house.setup
     rooms:  rooms
     target: Room.goto
 
   Room.create rooms
 
-  red = new NodeRed
-
   red.subscribe "GA",       [ Device.discover, Room.setup, red.request_replay ]
   red.subscribe "dpt",      [ Device.receive, house.receive ]
-  red.subscribe "weather",  [ house.weather ]
+  red.subscribe "weather",  [ Weather.receive ]
 
   Device.uplink red.send
+
+  weather.subscribe house.weather
+
+
+
 
   # #Manually send a message back to Node-RED after 2 seconds
   # window.setTimeout (->

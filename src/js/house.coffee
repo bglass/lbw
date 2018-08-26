@@ -42,17 +42,21 @@ exports.House = class House
     select(room, "room").css('background-color', color);
 
 
-  weather: (payload) ->
-    console.log "House received weather update", payload
-
-    dir   = payload.winddirection
-    speed = 2*Math.log(1+payload.windspeed)
+  weather: (data) ->
+    dir   = data.wind.direction
+    speed = 2*Math.log(1 + data.wind.speed)
 
     $("#wind #pointer")[0].setAttribute "transform", "rotate(#{dir}) scale(#{speed})"
-    Gauge.setValue barometer: P0: payload.pressure
+    Gauge.setValue barometer: P0: data.pressure
 
-    color = temp2color payload.tempc, 0.1
-    $("#House .background").css('background-color', color);
+    color = temp2color data.temperature, 0.1
+    $("#House .background").css 'background-color', color
+
+    color = temp2color data.temperature
+    $("#R2201").css 'background-color', color
+
+    $("#R2201 .temperature").empty().append data.temperature
+    $("#R2201 .unit").empty().append "°C"
 
   receive: (payload) ->
     if payload.name
