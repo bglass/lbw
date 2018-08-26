@@ -33,8 +33,11 @@ exports.Room = class Room
     @valves         = Device.find_type @number, "valve"
     @lights         = Device.find_type @number, "light"
     @lights_dimmed  = Device.find_type @number, "dimmer"
+    @motions        = Device.find_type @number, "motion"
 
-    @devices = [].concat @lights, @tsensor, @tsetpoint, @sockets, @valves
+
+
+    @devices = [].concat @lights, @tsensor, @tsetpoint, @sockets, @valves, @motions
 
     for tsensor, i in @tsensor
       tsensor.subscribe update_gauge(@number, "RoomT", "T"+i )
@@ -53,6 +56,11 @@ exports.Room = class Room
 
     for socket in @sockets
       socket.subscribe update_color("stroke", "socket"+socket.name)
+
+    for motion in @motions
+      uv = update_visibility("feet"+motion.name)
+      motion.subscribe uv
+
 
   switch_to: ->
 
@@ -92,6 +100,7 @@ exports.Room = class Room
     insert_icons  "#Rooms .SE", @sockets,      "socket"
     insert_icons  "#Rooms .NE", @lights,      "bulb"
     insert_dimmer "#Rooms .E",  @lights_dimmed
+    insert_icons  "#Rooms .W",  @motions, "feet"
 
     @refresh()
 
@@ -119,6 +128,14 @@ exports.Room = class Room
       value = raw_value * 0.6
     if element = $("#"+element_name)[0]
       element.setAttribute attribute, "hsl(50, 100%, #{value}%)"
+
+  update_visibility = (element_name) -> (visibility, timestamp) ->
+    console.log "uv", element_name, visibility
+    for e in $("#"+element_name)
+      e.setAttribute "visibility", (if visibility then "visible" else "hidden")
+
+
+
 
   update_text  = (element) -> (value, timestamp) ->
     $element.empty().append value.toFixed(1)

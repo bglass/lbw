@@ -45,6 +45,7 @@ exports.Device = class Device
       for subscriber in @subscribers
         subscriber @value, @timestamp
     else
+      # console.log "rf", @name, @timestamp
       @request_status()
 
 
@@ -91,6 +92,7 @@ exports.Device = class Device
               when "H"                  then    new HSensor   config
               when "S"                  then    new Setpoint  config
               when "V"                  then    new Valve     config
+              when "M"                  then    new Motion    config
             # when "G" # gate car / pedestrian
             # when "J" # jalousie
             # when "P" # pumps
@@ -149,6 +151,8 @@ exports.Device = class Device
           "status"
         else
           "value"
+      when "M"
+        "value"
       else
         "default"
 
@@ -191,6 +195,15 @@ exports.Sensor = class Sensor extends Device
 
 # ------------------------------------------------------------------
 
+exports.Motion = class Motion extends Sensor
+  ismotion: true
+
+  constructor: (cfg) ->
+    super cfg
+    @timestamp = 1
+
+# ------------------------------------------------------------------
+
 exports.TSensor = class Setpoint extends Sensor
   istsetpoint: true
 
@@ -202,6 +215,7 @@ exports.TSensor = class TSensor extends Sensor
 # ------------------------------------------------------------------
 exports.HSensor = class HSensor extends Sensor
   ishsensor: true
+
 
 # ------------------------------------------------------------------
 
