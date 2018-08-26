@@ -164,7 +164,6 @@ exports.Device = class Device
     @refresh()
 
   subscribe_channels: ->
-    console.log "sc", @name, @channels
     for channel, data of @channels
       callback = (
         switch channel

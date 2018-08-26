@@ -44,10 +44,14 @@ exports.House = class House
 
   weather: (data) ->
     dir   = data.wind.direction
-    speed = 2*Math.log(1 + data.wind.speed)
+    speed = Math.log(1 + data.wind.speed)
 
-    $("#wind #pointer")[0].setAttribute "transform", "rotate(#{dir}) scale(#{speed})"
+    $("#wind #pointer")[0].setAttribute "transform", "rotate(#{dir}) scale(#{speed * 2})"
     Gauge.setValue barometer: P0: data.pressure
+
+    west_east = if (dir < 180) then -1 else 1
+    for flag in $(".windvane")
+      flag.setAttribute("points", "0,-0.5 #{west_east * speed/5},-0.4 0 -0.3");
 
     color = temp2color data.temperature, 0.1
     $("#House .background").css 'background-color', color
