@@ -130,7 +130,7 @@ exports.Device = class Device
           "value"
         else if d.status
           "status"
-        else if d.dimmer
+        else if d.dimming
           "dimming"
         else
           "switch"
@@ -164,6 +164,7 @@ exports.Device = class Device
     @refresh()
 
   subscribe_channels: ->
+    console.log "sc", @name, @channels
     for channel, data of @channels
       callback = (
         switch channel
