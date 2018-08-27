@@ -1,8 +1,8 @@
-include icon
+include icons
 
 .iconbar
   for item in items
     .iconcell( style="width: "+ 90/(items.length)/1.5 +"%;")
-      +icon(shape, item.name)
+      +icon_clickable(shape, item.name)
       p=item.subname
       

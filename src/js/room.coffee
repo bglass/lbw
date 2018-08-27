@@ -4,6 +4,7 @@
 icon    = require '../html/icons.pug'
 sliders = require '../html/rooms/light_sliders.pug'
 iconbar = require '../html/icon/bar.pug'
+icon    = require '../html/icon/icon.pug'
 
 exports.Room = class Room
 
@@ -64,12 +65,22 @@ exports.Room = class Room
 
   setup: (@name) ->
     @devices = find_devices @number
+    @furnish_the_house()
     subscribe_to @devices, @number
+    @refresh()
 
-    # decorate the house
+  furnish_the_house: ->
     update_data_cell @number, "name", @name
     update_data_cell @number, "number", @number
     link_to @number, goto
+
+    if m = @devices.motions[0]
+      insert_icon  "#R#{@number} .motion",  m.name, "feet"
+
+
+
+
+
 
   find_devices = (room) ->
     sockets:        Room.find_devices room, "socket"
@@ -96,16 +107,14 @@ exports.Room = class Room
       id = "Dim" + light.name
       light.subscribe update_value(id)
     for motion in devices.motions
-      uv = update_visibility("feet"+motion.name)
-
+      uv = update_visibility("#feet"+motion.name)
       motion.subscribe uv
+      uv = update_visibility(".motion svg#"+motion.name)
+      motion.subscribe uv
+
 
   subscribe: (subscriber) ->
     @subscribers.push subscriber
-
-  refresh: ->
-    for subscriber in @subscribers
-      subscriber @data
 
   switch_to: ->
 
@@ -154,6 +163,8 @@ exports.Room = class Room
     for type, devices of @devices
       for device in devices
         device.refresh()
+    for subscriber in @subscribers
+      subscriber @data
 
   drop1st = (str) -> str.substr 1
 
@@ -177,7 +188,7 @@ exports.Room = class Room
       element.setAttribute attribute, "hsl(50, 100%, #{value}%)"
 
   update_visibility = (element_name) -> (visibility, timestamp) ->
-    for e in $("#"+element_name)
+    for e in $(element_name)
       e.setAttribute "visibility", (if visibility then "visible" else "hidden")
 
   update_text  = (element) -> (value, timestamp) ->
@@ -212,6 +223,11 @@ exports.Room = class Room
     src = iconbar(shape: shape, items: list)
     cell.append src
 
+  insert_icon = (selector, id, shape) ->
+    cell = $(selector).empty()
+    src = icon(shape: shape, id: id)
+    cell.append src
+
   @outdoor: (data) ->
     dir   = data.wind.direction
     speed = Math.log(1 + data.wind.speed)
@@ -222,8 +238,8 @@ exports.Room = class Room
     westerly  = - Math.sin(dir*Math.PI/180)
 
     flag = $(".windvane")
-    flag[0].setAttribute("points", "0,-0.5 #{northerly * speed/5},-0.4 0 -0.3");
-    flag[1].setAttribute("points", "0,-0.5 #{westerly * speed/5},-0.4 0 -0.3");
+    flag[0].setAttribute("points", "0,-0.5 #{northerly * speed/3},-0.4 0 -0.3");
+    flag[1].setAttribute("points", "0,-0.5 #{westerly * speed/3},-0.4 0 -0.3");
 
     color = temp2color data.temperature, 0.1
     $("#House .background").css 'background-color', color

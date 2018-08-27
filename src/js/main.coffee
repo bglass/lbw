@@ -13,14 +13,15 @@ window.tab_select = Tabs.tab_select
 
 
 rooms = {
-  "001": "Entry",   "008": "Toilet",    "005": "Living",
+  "001": "Entry",   "002": "Stairs",
+  "008": "Toilet",    "005": "Living",
   "004": "Pantry",  "006": "Kitchen",   "007": "Laundry",
   "011": "Garage",  "012": "Party",     "101": "Lina",
   "102": "Tian",    "103": "Parents",   "104": "Bath",
   "100": "Hall",    "111": "Library",   "112": "Studio",
-  "202": "Top",     "203": "Jane",      "211": "Vide",
+  "203": "Jane",      "211": "Vide",
   "212": "Cave",    "K03": "Crawl",     "K05": "Crawl",
-  "201": "Office",  "2201": "Noordwijk"
+  "202": "Office",  "2201": "Noordwijk"
 }
 
 $ ->

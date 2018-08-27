@@ -28,6 +28,12 @@ mixin weather
       .verticalCenter
         .weather
           img
+
+mixin motion
+  .dataWrap
+    .dataCell
+      .verticalCenter
+        .motion
             
 mixin room(id)
   .roomWrap(id=id)
@@ -39,7 +45,7 @@ mixin room(id)
         +data("W")
         +temperature
         +data("E")
-        +data("SW")
+        +motion
         +data("S")
         +data("SE")
 
@@ -62,6 +68,7 @@ mixin outdoor(id)
 
   .foreground
     +room("R001")
+    +room("R002")
     +room("R008")
     +room("R005")
     +room("R004")
@@ -76,7 +83,6 @@ mixin outdoor(id)
     +room("R100")
     +room("R111")
     +room("R112")
-    +room("R201")
     +room("R202")
     +room("R203")
     +room("R211")

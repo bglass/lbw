@@ -111,6 +111,19 @@
   display: flex;
 }
 
+
+
+.motion {
+  display: flex;
+  align-items: center;
+  justify-content:space-evenly;
+  align-content: center;
+  height: 100%;
+
+}
+
+
+
 .verticalCenter {
   display: block;
 }
@@ -133,7 +146,8 @@
 .room .number, .room .unit{
   font-size: 0.5vw;
 
-}
+}#R004   { grid-row:  7;   grid-column: 5 }
+
 
 .bottomrow {
   grid-column: span 3;
@@ -147,13 +161,20 @@
   position: relative;
 }
 
+
+
+.motion svg {
+  /* border: 1px solid red; */
+  width: 80%;
+  height: 80%;
+}
+
 #wind      { grid-row:  1 / span 2;   grid-column: 6 / span 2}
 #barometer { grid-row:  1 / span 1;   grid-column: 8 / span 1}
 #R2201 { grid-row:  1;   grid-column: 1 }
 #x2 { grid-row:  2;   grid-column: 1 }
 #x3 { grid-row:  3;   grid-column: 1 }
 
-#R201   { grid-row:  4;   grid-column: 2 }
 #R202   { grid-row:  4;   grid-column: 3 }
 #R203   { grid-row:  4;   grid-column: 4 }
 #R211   { grid-row:  4;   grid-column: 9 }
@@ -168,13 +189,14 @@
 #R112   { grid-row:  5;   grid-column: 10}
 
 #R001   { grid-row:  6;   grid-column: 2 }
+#R002   { grid-row:  7;   grid-column: 4 }
 #R008   { grid-row:  6;   grid-column: 3 }
 #R005   { grid-row:  6;   grid-column: 5 }
-#R004   { grid-row:  7;   grid-column: 4 }
+#R004   { grid-row:  7;   grid-column: 5 }
 #R006   { grid-row:  6;   grid-column: 6 }
 #R007   { grid-row:  6;   grid-column: 7 }
 #R011   { grid-row:  6;   grid-column: 9 }
 #R012   { grid-row:  6;   grid-column: 10}
 
-#RK03   { grid-row:  7;   grid-column: 3 }
-#RK05   { grid-row:  7;   grid-column: 5 }
+#RK03   { grid-row:  7;   grid-column: 2 }
+#RK05   { grid-row:  7;   grid-column: 3 }
