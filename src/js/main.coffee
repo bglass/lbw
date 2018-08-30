@@ -21,7 +21,9 @@ rooms = {
   "100": "Hall",    "111": "Library",   "112": "Studio",
   "203": "Jane",      "211": "Vide",
   "212": "Cave",    "K03": "Crawl",     "K05": "Crawl",
-  "202": "Office",  "2201": "Noordwijk"
+  "202": "Office",  "2201": "Noordwijk",
+  "401": "Patio",   "402": "Driveway",
+  "403": "North",   "404": "Compost"
 }
 
 $ ->

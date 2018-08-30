@@ -200,3 +200,8 @@
 
 #RK03   { grid-row:  7;   grid-column: 2 }
 #RK05   { grid-row:  7;   grid-column: 3 }
+
+#R401   { grid-row:  8;   grid-column: 6 }
+#R402   { grid-row:  8;   grid-column: 1 }
+#R403   { grid-row:  4;   grid-column: 1 }
+#R404   { grid-row:  4;   grid-column: 6 }
