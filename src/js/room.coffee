@@ -1,7 +1,7 @@
 if true
   Gauge   = (require "glass-gauge").Gauge
 else
-  {Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
+  # {Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
 
 icon    = require '../html/icons.pug'
 sliders = require '../html/rooms/light_sliders.pug'

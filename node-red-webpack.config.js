@@ -53,8 +53,9 @@ module.exports = {
     rules: [
       { test: /\.coffee$/,
         include: [
-          path.resolve(__dirname, src + '/js'),
-          '/home/boris/work/glass-gauge/src/coffee'
+          path.resolve(__dirname, src + '/js')
+          // ,
+          // '/home/boris/work/glass-gauge/src/coffee'
         ],
         use: [ 'coffee-loader' ]
       },
