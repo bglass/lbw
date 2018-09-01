@@ -1,10 +1,12 @@
-# glass = require "glass-gauge"
-# Gauge = glass.Gauge
+if true
+  glass = require "glass-gauge"
+  Gauge = glass.Gauge
+else
+  {Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
 
 suncalc = require './suncalc.js'
 
 
-{Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
 
 
 export add = ->
