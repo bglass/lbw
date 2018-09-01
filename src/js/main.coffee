@@ -3,7 +3,7 @@ require '../css/main.css'
 # {House} = require './house.coffee'
 {Room}  = require './room.coffee'
 {Device} = require './device.coffee'
-{Weather} = require './weather.coffee'
+{Weather, Sheep} = require './source.coffee'
 
 {NodeRed} = require './node_red.coffee'
 time = require './time.coffee'
@@ -23,7 +23,8 @@ rooms = {
   "212": "Cave",    "K03": "Crawl",     "K05": "Crawl",
   "202": "Office",  "2201": "Noordwijk",
   "401": "Patio",   "402": "Driveway",
-  "403": "North",   "404": "Compost"
+  "403": "North",   "404": "Compost",
+  "888": "Schaaf"
 }
 
 $ ->
@@ -35,15 +36,19 @@ $ ->
 
   red     = new NodeRed
   weather = new Weather
+  sheep   = new Sheep
 
   Room.create rooms
 
   red.subscribe "GA",       [ Device.discover, Room.setup, red.request_replay ]
   red.subscribe "dpt",      [ Device.receive ]
-  red.subscribe "weather",  [ Weather.receive ]
+  red.subscribe "weather",  [ weather.receive ]
+  red.subscribe "schaaf",    [ sheep.receive ]
+
 
   Device.uplink red.send
   Room.set_find_devices Device.find_type
 
 
   weather.subscribe Room.outdoor
+  sheep.subscribe  Room.mower

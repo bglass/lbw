@@ -1,8 +1,22 @@
-exports.Weather = class Weather
+class Source
 
   constructor: ->
-    Weather.singleton = @
     @subscribers      = []
+    @data = {}
+
+
+  subscribe: (subscriber) ->
+    @subscribers.push subscriber
+
+  refresh: ->
+    for subscriber in @subscribers
+      subscriber @data
+
+exports.Weather = class Weather extends Source
+
+  constructor: ->
+    super()
+    Weather.singleton = @
     @data = {
       timestamp:    0
       temperature:  0
@@ -12,13 +26,10 @@ exports.Weather = class Weather
         speed:      0
       }
 
-  @receive: (payload) ->
-    Weather.singleton.receive payload
+  # @receive: (payload) ->
+  #   Weather.singleton.receive payload
 
-
-  receive: (payload) ->
-    console.log "weather update", payload, @data
-
+  receive: (payload) =>
     @data.wind.direction = payload.winddirection
     @data.wind.speed     = payload.windspeed
     @data.temperature    = payload.tempc
@@ -26,13 +37,10 @@ exports.Weather = class Weather
     @data.text           = payload.weather
     @data.icon           = payload.icon
     @data.timestamp      = Date.now()
-
-
     @refresh()
 
-  subscribe: (subscriber) ->
-    @subscribers.push subscriber
+exports.Sheep = class Sheep extends Source
 
-  refresh: ->
-    for subscriber in @subscribers
-      subscriber @data
+  receive: (payload) =>
+    @data[payload.channel.join("/")] = payload.value
+    @refresh()

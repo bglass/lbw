@@ -29,6 +29,15 @@ mixin weather
         .weather
           img
 
+mixin schaaf
+  .schaafWrap.block2x2
+    img.schaaf
+
+mixin mowermode
+  .modeWrap
+    img.mowermode
+
+
 mixin motion
   .dataWrap
     .dataCell
@@ -60,6 +69,24 @@ mixin outdoor(id)
         +temperature
         +data("E")
         +weather
+
+mixin mower(id)
+  .roomWrap(id=id)
+    .room
+      .dataGrid
+        +room_info
+        +data("N")
+        +mowermode
+        +schaaf
+        .dataWrap
+          .dataCell
+            .verticalCenter
+              .hours.small
+              .charge.small
+        .dataWrap
+          .dataCell
+            .verticalCenter
+              .duration.tiny
 
 
 #house
@@ -100,7 +127,7 @@ mixin outdoor(id)
     +room("R403")
     +room("R404")
     
-    
+    +mower("R888")
     +outdoor("R2201")
     
     #wind

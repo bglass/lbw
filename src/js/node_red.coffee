@@ -11,7 +11,7 @@ exports.NodeRed = class NodeRed
 
 
   send:  (msg) ->
-    console.log "NR send", msg
+    # console.log "NR send", msg
     uibuilder.send msg
 
   sendCtrl: (msg) ->
@@ -44,10 +44,12 @@ exports.NodeRed = class NodeRed
     # Note that you can also listen for 'msgsReceived' as they are updated at the same time
     # but newVal relates to the attribute being listened to.
     uibuilder.onChange 'msg', (msg) =>
+      # console.log ">RX", msg
       if @debug
         console.info 'property msg changed!'
         console.dir msg
-      $('#showMsg').text JSON.stringify(msg)
+      # $('#showMsg').text JSON.stringify(msg)
+      # console.log "onC", msg, @receivers[msg.topic]
 
       if @receivers[msg.topic]?
         for rx in @receivers[msg.topic]

@@ -45,13 +45,13 @@ exports.Device = class Device
       for subscriber in @subscribers
         subscriber @value, @timestamp
     else
-      # console.log "rf", @name, @timestamp
+      # console.log "rf:expired", @name, @timestamp
       @request_status()
 
 
   request_status: ->
 
-    console.warn "Expired:", @name, @value, (Date.now()-@timestamp)/1000/60, "(minutes)"
+    # console.warn "Expired:", @name, @value, (Date.now()-@timestamp)/1000/60, "(minutes)"
 
     channel = if @channels.value
                 @channels.value

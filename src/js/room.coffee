@@ -253,7 +253,39 @@ exports.Room = class Room
     iconurl = "http://openweathermap.org/img/w/#{data.icon}.png"
     $('.weather img').attr 'src', iconurl
 
-    console.log "wrx"
+
+  @mower: (data) ->
+
+    # console.log "mower0", data
+
+
+    state = switch data["mower/status"]
+      when "1" then "park"
+      when "2" then "mow"
+      when "3" then "return"
+      when "4" then "charge"
+      when "7" then "error"
+      when "8" then "noloop"
+      when "16" then "off"
+      when "17" then "sleep"
+      else "unkown"
+
+    modes = ["auto", "manual", "home", "demo"]
+    m = parseInt data["mower/mode"], 10
+    mode = modes[m]
+
+    console.log "mower", data, state, mode
+
+    $('img.schaaf').attr 'src', "img/sheep/#{state}.jpg"
+    $('img.mowermode').attr 'src', "img/sheep/#{mode}.png"
+
+    if charge = data["mower/battery/charge"]
+      $('#R888 .charge').empty().append charge
+    if hours  = data["mower/statistic/hours"]
+      $('#R888 .hours').empty().append hours + " h"
+    if duration  = data["mower/status/duration"]
+      $('#R888 .duration').empty().append duration
+
 
 
 

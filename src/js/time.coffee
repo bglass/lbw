@@ -87,7 +87,7 @@ export add = ->
 
   night_time = ->
     noordwijk = suncalc.getTimes new Date(), 52.233405, 4.437712
-    console.log "NWZH", noordwijk
+    # console.log "NWZH", noordwijk
     Gauge.setValue    "time": {Dawn: hours(noordwijk.sunrise) }
     Gauge.setValue    "time": {Dusk: hours(noordwijk.sunset)  }
   # setInterval night_time, 1000   # 3h
