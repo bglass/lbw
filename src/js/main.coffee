@@ -1,6 +1,6 @@
 require '../css/main.css'
 
-# {House} = require './house.coffee'
+{Gauge} = require './gauge/gauge.coffee'
 {Room}  = require './room.coffee'
 {Device} = require './device.coffee'
 {Weather, Sheep} = require './source.coffee'
@@ -32,11 +32,15 @@ $ ->
   tab = if    hash = window.location.hash.substr 1 then hash else  "House"
   $("#btn" + tab).click();
 
-  time.add()
+  time.add
+    gauge: Gauge
 
   red     = new NodeRed
   weather = new Weather
   sheep   = new Sheep
+
+  Room.configure
+    gauge: Gauge
 
   Room.create rooms
 

@@ -1,7 +1,13 @@
-if true
-  glass = require "glass-gauge"
-  Gauge = glass.Gauge
-else
+# if true
+# glass = require "glass-gauge"
+
+
+# Gauge = glass.Gauge
+
+
+
+
+# else
   # {Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
 
 suncalc = require './suncalc.js'
@@ -9,9 +15,9 @@ suncalc = require './suncalc.js'
 
 
 
-export add = ->
+export add = ({gauge})->
 
-  Gauge.create
+  gauge.create
     "time":
       title:    ""
       scale:    "clk":
@@ -23,6 +29,7 @@ export add = ->
           divisions:  11
           offset:     -150
           rotate:      0
+
         tick:
           offset1:      -60
           offset2:      -100
@@ -76,9 +83,9 @@ export add = ->
     h12 = time.getHours() %% 12 + m/60
     h24 = time.getHours()       + m/60
     #
-    Gauge.setValue      "time": {H: h24 }
-    Gauge.setValue      "time": {M: m}
-    Gauge.setValue      "time": {S: s}
+    gauge.setValue      "time": {H: h24 }
+    gauge.setValue      "time": {M: m}
+    gauge.setValue      "time": {S: s}
     #
   setInterval tick, 1000
 
@@ -90,8 +97,8 @@ export add = ->
   night_time = ->
     noordwijk = suncalc.getTimes new Date(), 52.233405, 4.437712
     # console.log "NWZH", noordwijk
-    Gauge.setValue    "time": {Dawn: hours(noordwijk.sunrise) }
-    Gauge.setValue    "time": {Dusk: hours(noordwijk.sunset)  }
+    gauge.setValue    "time": {Dawn: hours(noordwijk.sunrise) }
+    gauge.setValue    "time": {Dusk: hours(noordwijk.sunset)  }
   # setInterval night_time, 1000   # 3h
 
   night_time()

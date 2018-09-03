@@ -1,6 +1,6 @@
-if true
-  Gauge   = (require "glass-gauge").Gauge
-else
+# if true
+# Gauge   = (require "glass-gauge").Gauge
+# else
   # {Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
 
 icon    = require '../html/icons.pug'
@@ -23,6 +23,9 @@ exports.Room = class Room
       brightness:  0
       motion:      false
       valve:       0
+
+  @configure: ({gauge}) ->
+    Room.gauge = gauge
 
   @create: (rooms) ->
     Room.rooms = rooms
@@ -292,7 +295,7 @@ exports.Room = class Room
 
 
   insert_temperature_gauge = ->
-    Gauge.create
+    Room.gauge.create
       "RoomT":
         title:    ""
         scale:    "S1":
@@ -327,7 +330,7 @@ exports.Room = class Room
                   offset: -50
 
   insert_valve_gauge = ->
-    Gauge.create
+    Room.gauge.create
       "RoomV":
         title:    ""
         scale:    "S1":
