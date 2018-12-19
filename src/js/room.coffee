@@ -10,6 +10,8 @@ icon    = require '../html/icon/icon.pug'
 
 exports.Room = class Room
 
+  Gauge = false
+
   @current = ""
   @store = {}
   @find:  (x) ->    Room.store[x]
@@ -25,7 +27,7 @@ exports.Room = class Room
       valve:       0
 
   @configure: ({gauge}) ->
-    Room.gauge = gauge
+    @gauge = gauge
 
   @create: (rooms) ->
     Room.rooms = rooms

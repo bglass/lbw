@@ -29,9 +29,11 @@ rooms = {
 
 $ ->
 
+  # try to restore a previously selected tab in the browser
   tab = if    hash = window.location.hash.substr 1 then hash else  "House"
   $("#btn" + tab).click();
 
+  # show the clock
   time.add
     gauge: Gauge
 
