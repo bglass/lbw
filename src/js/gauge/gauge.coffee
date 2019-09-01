@@ -32,6 +32,9 @@ export class Gauge
     )
 
 
+  @get: (id) ->
+    return SVG.get id
+
   create_subelements: ->
     scales: Scale.create @config.scale, @data()
 

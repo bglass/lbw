@@ -4,6 +4,14 @@
 exports.SVG = class SVG
 
   @store = {}
+  @find:  (x) ->    SVG.store[x]
+
+  @get:   (id) ->
+    if svg = SVG.find id then return svg
+    else
+      node = document.querySelectorAll("svg#" + id)[0];
+      return new SVG(id, node)
+
 
   constructor: (@id, @node)->
 
@@ -27,6 +35,10 @@ exports.SVG = class SVG
     tag = @new_tag id, type, attributes
     if id?.length
       new SVG(id, tag)
+
+  add_link: (id, attributes) ->
+    @add_element id, "a", attributes
+
 
   new_tag: (id, type, attributes) ->
     tag = document.createElementNS(ns, type)
@@ -64,6 +76,9 @@ exports.SVG = class SVG
 
   add_polygon: (id, attributes) ->
     @add_element id, "polygon", attributes
+
+  add_rectangle: (id, attributes) ->
+    @add_element id, "rect", attributes
 
   add_defs: ->
     @add_element "defs", "defs", {}

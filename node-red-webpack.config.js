@@ -9,6 +9,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const path = require('path');
 
 var HTMLWebpackPluginConf = new HtmlWebpackPlugin({
+  // ENTRY_POINT:
   template: __dirname + '/uibuilder/' + url + '/src/html/index.pug',
   filename: 'index.html'
 });
@@ -35,6 +36,7 @@ var webpackJQueryPluginConf = new webpack.ProvidePlugin({
 
 module.exports = {
   entry: [
+    // JAVASCRIPT ENTRY_POINT
     src + '/js/main.coffee',
     'normalize.css'
   ],

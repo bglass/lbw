@@ -1,8 +1,3 @@
-# if true
-# Gauge   = (require "glass-gauge").Gauge
-# else
-  # {Gauge} = require '/home/boris/work/glass-gauge/src/coffee/gauge.coffee'
-
 icon    = require '../html/icons.pug'
 sliders = require '../html/rooms/light_sliders.pug'
 iconbar = require '../html/icon/bar.pug'
@@ -17,7 +12,7 @@ exports.Room = class Room
   @find:  (x) ->    Room.store[x]
   @get:   (x) ->    if y = Room.find x then y else new Room(x)
 
-  constructor: (@number) ->
+  constructor: (@house, @number, details) ->
     Room.store[@number] = @
     @subscribers        = []
     @data =
@@ -25,23 +20,34 @@ exports.Room = class Room
       brightness:  0
       motion:      false
       valve:       0
+    @setup details
+
+  setup: ([@name, @floor, @x]) ->
+    @refresh()
+    @draw()
+
+  @receive_group_adress_catalog: (payload) ->
+    for number, details of Room.store
+
+      room = Room.get number
+      room.setup_group_address(details.name)
+
+  setup_group_address: (@name) ->
+
+    if @devices = find_devices @number
+      subscribe_to @devices, @number
+
+    if m = @devices.motions[0]
+      insert_icon  "#R#{@number} .motion",  m.name, "feet"
+
 
   @configure: ({gauge}) ->
     @gauge = gauge
 
-  @create: (rooms) ->
-    Room.rooms = rooms
-    insert_temperature_gauge()
-    insert_valve_gauge()
-
-  @set_find_devices: (f) ->
-    Room.find_devices = f
-
   select = (room, subclass) ->
-    $(".roomWrap#R#{room} .#{subclass}")
+    x = $("#R#{room} ##{subclass}")
+    return x
 
-  link_to = (room, target) ->
-    $("#R"+room).click(target)
 
   update_data_cell = (room, subclass, text) ->
     select(room, subclass).empty().append text
@@ -62,32 +68,11 @@ exports.Room = class Room
     return "hsla(#{200*(1-rl)}, 80%, 50%, #{a})"
 
   set_color = (room, color) ->
-    select(room, "room").css('background-color', color);
+    select(room, "box")[0].setAttribute("style", "fill: #{color}");
+    select(room, "box")[0].setAttribute("stroke", "none");
 
-
-  @setup: (payload) ->
-    for number, name of Room.rooms
-      room = Room.get number
-      room.setup(name)
-
-  setup: (@name) ->
-    @devices = find_devices @number
-    @furnish_the_house()
-    subscribe_to @devices, @number
-    @refresh()
-
-  furnish_the_house: ->
-    update_data_cell @number, "name", @name
-    update_data_cell @number, "number", @number
-    link_to @number, goto
-
-    if m = @devices.motions[0]
-      insert_icon  "#R#{@number} .motion",  m.name, "feet"
-
-
-
-
-
+  @set_find_devices: (f) ->
+    Room.find_devices = f
 
   find_devices = (room) ->
     sockets:        Room.find_devices room, "socket"
@@ -132,6 +117,10 @@ exports.Room = class Room
     $("#Rooms .name").text @name
     $("#Rooms .number").text @number
 
+    if !@devices
+      console.log "st", @number, @devices
+
+
     # temperature gauge
     if not @devices.tsensor?.length > 0
       Gauge.hide "RoomT"
@@ -167,6 +156,11 @@ exports.Room = class Room
     @refresh()
 
   refresh: ->
+
+    if !@devices
+      console.log "refre", @devices
+
+
     for type, devices of @devices
       for device in devices
         device.refresh()
@@ -175,18 +169,12 @@ exports.Room = class Room
 
   drop1st = (str) -> str.substr 1
 
-  goto = (evt) ->
-    $("#btnRooms").click();
-    history.pushState {}, "Rooms", "#Rooms"
-    number = drop1st evt.currentTarget.id
-    room   = Room.find number
-    room.switch_to()
 
 
   # also see https://codepen.io/kunukn/pen/pgqvpQ for a different, very nice design
+  # (^ vertical input sliders)
 
   update_color = (attribute, element_name) -> (raw_value, timestamp) ->
-    console.log "uc", @name
     if typeof raw_value == 'boolean'
       value = if raw_value then 60 else 0
     else
@@ -346,3 +334,53 @@ exports.Room = class Room
                   type: "bar"
                   color: "red"
                 "Digital":  type: "digital"
+
+  goto = (evt) ->
+    $("#btnRooms").click();
+    history.pushState {}, "Rooms", "#Rooms"
+    number = drop1st evt.currentTarget.id
+    room   = Room.find number
+    room.switch_to()
+    alert(room)
+
+  draw: ->
+
+    @svg = @house.add_group "R#{@number}",
+      transform: "translate(#{@x} #{4-@floor})"
+
+    @link = @svg.add_link "R#{@number}"
+    @link.node.addEventListener("click", goto)
+
+
+    @link.add_rectangle "box",
+      "stroke-width": 0.005
+      # stroke: "none"
+      x: 0.1
+      y: 0.1
+      width: .8
+      height: .8
+      rx: .2
+
+    @text = @svg.add_group "text",
+      transform: "scale(0.01)"
+      stroke: "none"
+
+    @text.add_text "name", @name,
+      style: "font: normal 12px serif; fill: black;"
+      x: 20
+      y: 30
+
+    @text.add_text "number", @number,
+      style: "font: normal 8px serif; fill: black;"
+      x: 20
+      y: 40
+
+    @text.add_text "unit", ".",
+      style: "font: normal 8px serif; fill: black;"
+      x: 42
+      y: 80
+
+    @text.add_text "temperature", "..",
+      style: "font: normal 15px serif; fill: black;"
+      x: 40
+      y: 60
