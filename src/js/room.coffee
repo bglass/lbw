@@ -5,12 +5,15 @@ icon    = require '../html/icon/icon.pug'
 
 exports.Room = class Room
 
-  Gauge = false
+  # Gauge = false
 
   @current = ""
   @store = {}
   @find:  (x) ->    Room.store[x]
   @get:   (x) ->    if y = Room.find x then y else new Room(x)
+
+  @configure: ({gauge}) ->
+    Room.gauge = gauge
 
   constructor: (@house, @number, details) ->
     Room.store[@number] = @
@@ -41,8 +44,6 @@ exports.Room = class Room
       insert_icon  "#R#{@number} .motion",  m.name, "feet"
 
 
-  @configure: ({gauge}) ->
-    @gauge = gauge
 
   select = (room, subclass) ->
     x = $("#R#{room} ##{subclass}")
@@ -123,29 +124,29 @@ exports.Room = class Room
 
     # temperature gauge
     if not @devices.tsensor?.length > 0
-      Gauge.hide "RoomT"
-      Gauge.hide_indicator "RoomT", "Needle1"
+      Room.gauge.hide "RoomT"
+      Room.gauge.hide_indicator "RoomT", "Needle1"
     else
-      Gauge.show "RoomT"
+      Room.gauge.show "RoomT"
       if @devices.tsensor.length == 1
-        Gauge.hide_indicator "RoomT", "Needle1"
+        Room.gauge.hide_indicator "RoomT", "Needle1"
       else
-        Gauge.show_indicator "RoomT", "Needle1"
+        Room.gauge.show_indicator "RoomT", "Needle1"
 
 
     # setpoints
     if @devices.tsetpoint?.length > 0
-      Gauge.show_indicator "RoomT", "Setpoint"
+      Room.gauge.show_indicator "RoomT", "Setpoint"
     else
-      Gauge.hide_indicator "RoomT", "Setpoint"
+      Room.gauge.hide_indicator "RoomT", "Setpoint"
 
     # valves
     if @devices.valves?.length > 0
       # console.log "show valve", @devices.valves[0].value, @devices.valves[0].timestamp
-      Gauge.show "RoomV"
+      Room.gauge.show "RoomV"
     else
       # console.log "hide valve"
-      Gauge.hide "RoomV"
+      Room.gauge.hide "RoomV"
 
     # lights and sockets
     insert_icons  "#Rooms .SE", @devices.sockets,      "socket"
@@ -199,7 +200,7 @@ exports.Room = class Room
       data = {}
       data[gauge] = {}
       data[gauge][quantity] = {value: value, timestamp: timestamp}
-      Gauge.setValue data
+      Room.gauge.setValue data
 
   update_summary_temperature = (room) -> (value, timestamp) ->
     update_data_cell room, "temperature", value.toFixed(1)
