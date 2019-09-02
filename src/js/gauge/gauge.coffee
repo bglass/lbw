@@ -12,14 +12,12 @@ export class Gauge
   @create: (config) ->
     gauges = []
     for gauge_id, cfg of config
-      console.log "Gauge:", gauge_id, cfg
       gauges.push (new Gauge(gauge_id, cfg))
     return gauges
 
   constructor: (@id, config) ->
     Gauge.store[@id] = @
 
-    console.log "Gauge construct", @id, config
     @config = settings("gauge", config)
 
     @svg = SVG.add_svg @id, [0, 0, @config.width, @config.height]

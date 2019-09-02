@@ -118,10 +118,6 @@ exports.Room = class Room
     $("#Rooms .name").text @name
     $("#Rooms .number").text @number
 
-    if !@devices
-      console.log "st", @number, @devices
-
-
     # temperature gauge
     if not @devices.tsensor?.length > 0
       Room.gauge.hide "RoomT"
@@ -157,10 +153,6 @@ exports.Room = class Room
     @refresh()
 
   refresh: ->
-
-    if !@devices
-      console.log "refre", @devices
-
 
     for type, devices of @devices
       for device in devices
@@ -345,7 +337,6 @@ exports.Room = class Room
     number = drop1st evt.currentTarget.id
     room   = Room.find number
     room.switch_to()
-    alert(room)
 
   draw: ->
 

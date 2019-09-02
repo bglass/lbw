@@ -76,9 +76,9 @@ $ ->
   red.subscribe "weather",  [ weather.receive ]
   red.subscribe "schaaf",    [ sheep.receive ]
 
-  console.log "done so far"
-  # Device.uplink red.send
+  Device.uplink red.send
 
+  console.log "done so far"
 
   # weather.subscribe Room.outdoor
   # sheep.subscribe  Room.mower
