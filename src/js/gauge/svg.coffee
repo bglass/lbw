@@ -163,6 +163,9 @@ class Path extends SVG
     p0  = @position t0
     d0 = distance p0, mouse
 
+    # console.log p0, d0
+
+
     dt_min = 0.0001
     dt     = 0.01
     sign   = if t0 > 0.5 then -1 else 1

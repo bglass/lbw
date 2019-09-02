@@ -314,12 +314,13 @@ exports.Room = class Room
                   shape:  "right"
                   color:  "blue"
                   offset: -50
+                  draggable: true
 
   insert_valve_gauge = ->
     Room.gauge.create
       "RoomV":
         title:    ""
-        scale:    "S1":
+        scale:    "S2":
           type:     "vertical"
           v0:     0
           v1:     100

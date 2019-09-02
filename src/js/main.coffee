@@ -80,5 +80,5 @@ $ ->
 
   console.log "done so far"
 
-  # weather.subscribe Room.outdoor
-  # sheep.subscribe  Room.mower
+  weather.subscribe Room.outdoor
+  sheep.subscribe  Room.mower
