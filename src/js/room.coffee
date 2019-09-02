@@ -282,6 +282,9 @@ exports.Room = class Room
       $('#R888 .duration').empty().append duration
 
 
+  @insert_gauges: ->
+    insert_temperature_gauge()
+    insert_valve_gauge()
 
 
   insert_temperature_gauge = ->
