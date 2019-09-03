@@ -154,6 +154,8 @@ exports.Room = class Room
 
   refresh: ->
 
+    console.log "refreshing"
+
     for type, devices of @devices
       for device in devices
         device.refresh()
@@ -217,10 +219,11 @@ exports.Room = class Room
     cell.append src
 
   @outdoor: (data) ->
+    console.log "OUTDOOR", data
     dir   = data.wind.direction
     speed = Math.log(1 + data.wind.speed)
 
-    $("#wind #pointer")[0].setAttribute "transform", "rotate(#{dir}) scale(#{speed * 2})"
+    $("#windpointer")[0].setAttribute "transform", "rotate(#{dir}) scale(#{speed * 2})"
 
     northerly = Math.cos(dir*Math.PI/180)
     westerly  = - Math.sin(dir*Math.PI/180)
@@ -233,7 +236,10 @@ exports.Room = class Room
     $("#House .background").css 'background-color', color
 
     color = temp2color data.temperature
-    $("#R2201").css 'background-color', color
+
+    set_color("R2201", color)
+
+    # $("#R2201").css 'background-color', color
 
     $("#R2201 .temperature").empty().append data.temperature
     $("#R2201 .unit").empty().append "°C"

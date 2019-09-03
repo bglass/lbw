@@ -30,6 +30,7 @@ exports.Weather = class Weather extends Source
   #   Weather.singleton.receive payload
 
   receive: (payload) =>
+    console.log "Received some weather.", payload
     @data.wind.direction = payload.winddirection
     @data.wind.speed     = payload.windspeed
     @data.temperature    = payload.tempc
