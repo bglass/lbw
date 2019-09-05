@@ -41,17 +41,23 @@ exports.Room = class Room
       subscribe_to @devices, @number
 
     if m = @devices.motions[0]
-      insert_icon  "#R#{@number} .motion",  m.name, "feet"
+      insert_icon  "#R#{@number} #motion",  m.name, "feet"
 
 
+  select = (selector) ->
+    elements = $(selector)
+    console.warn "Selector #{selector} got #{elements.length} results!" unless elements.length == 1
+    return elements
 
-  select = (room, subclass) ->
-    x = $("#R#{room} ##{subclass}")
-    return x
+  select0 = (selector) ->
+    select(selector)[0]
+
+  select_room = (room, subclass) ->
+    select "#R#{room} ##{subclass}"
 
 
   update_data_cell = (room, subclass, text) ->
-    select(room, subclass).empty().append text
+    select_room(room, subclass).empty().append text
 
   relative_temperature = (v) ->
     v0 = 10
@@ -68,9 +74,14 @@ exports.Room = class Room
     rl = limited_relative v
     return "hsla(#{200*(1-rl)}, 80%, 50%, #{a})"
 
+  set_room_attribute = (room, attributes) ->
+    for key, value of attributes
+      select_room(room, "box")[0].setAttribute(key, value)
+
   set_color = (room, color) ->
-    select(room, "box")[0].setAttribute("style", "fill: #{color}");
-    select(room, "box")[0].setAttribute("stroke", "none");
+    set_room_attribute room,
+      style: "fill: #{color}"
+      stroke: "none"
 
   @set_find_devices: (f) ->
     Room.find_devices = f
@@ -100,9 +111,11 @@ exports.Room = class Room
       id = "Dim" + light.name
       light.subscribe update_value(id)
     for motion in devices.motions
-      uv = update_visibility("#feet"+motion.name)
+      # uv = update_visibility("#feet"+motion.name)
+      uv = update_visibility("#"+motion.name)
       motion.subscribe uv
-      uv = update_visibility(".motion svg#"+motion.name)
+      # uv = update_visibility(".motion svg#"+motion.name)
+      uv = update_visibility("#"+motion.name)
       motion.subscribe uv
 
 
@@ -115,8 +128,8 @@ exports.Room = class Room
     Room.current = @number
 
     # static text
-    $("#Rooms .name").text @name
-    $("#Rooms .number").text @number
+    select("#Rooms .name").text @name
+    select("#Rooms .number").text @number
 
     # temperature gauge
     if not @devices.tsensor?.length > 0
@@ -145,10 +158,10 @@ exports.Room = class Room
       Room.gauge.hide "RoomV"
 
     # lights and sockets
-    insert_icons  "#Rooms .SE", @devices.sockets,      "socket"
+    insert_icons  "#Rooms .SE", @devices.sockets,     "socket"
     insert_icons  "#Rooms .NE", @devices.lights,      "bulb"
     insert_dimmer "#Rooms .E",  @devices.lights_dimmed
-    insert_icons  "#Rooms .W",  @devices.motions, "feet"
+    insert_icons  "#Rooms .W",  @devices.motions,     "feet"
 
     @refresh()
 
@@ -174,18 +187,18 @@ exports.Room = class Room
       value = if raw_value then 60 else 0
     else
       value = raw_value * 0.6
-    if element = $("#"+element_name)[0]
+    if element = select0("#"+element_name)
       element.setAttribute attribute, "hsl(50, 100%, #{value}%)"
 
   update_visibility = (element_name) -> (visibility, timestamp) ->
-    for e in $(element_name)
+    for e in select(element_name)
       e.setAttribute "visibility", (if visibility then "visible" else "hidden")
 
   update_text  = (element) -> (value, timestamp) ->
     $element.empty().append value.toFixed(1)
 
   update_value = (element_name) -> (value, timestamp) ->
-    if element = $("#"+element_name)[0]
+    if element = select0("#"+element_name)
       element.value = value
 
   update_gauge = (room, gauge, quantity) -> (value, timestamp) ->
@@ -204,48 +217,47 @@ exports.Room = class Room
 
   insert_dimmer = (selector, list) ->
     # names = list.map (x) -> "Dim" + x.name
-    $(selector).empty().append (sliders items: list)
+    select(selector).empty().append (sliders items: list)
 
   insert_icons = (selector, list, shape) ->
 
-    cell = $(selector).empty()
+    cell = select(selector).empty()
     # console.log "ii", shape, list
     src = iconbar(shape: shape, items: list)
     cell.append src
 
   insert_icon = (selector, id, shape) ->
-    cell = $(selector).empty()
+    cell = select(selector).empty()
     src = icon(shape: shape, id: id)
     cell.append src
 
   @outdoor: (data) ->
-    console.log "OUTDOOR", data
     dir   = data.wind.direction
     speed = Math.log(1 + data.wind.speed)
 
-    $("#windpointer")[0].setAttribute "transform", "rotate(#{dir}) scale(#{speed * 2})"
+    select0("#windpointer").setAttribute "transform", "rotate(#{dir}) scale(#{speed * 2})"
 
     northerly = Math.cos(dir*Math.PI/180)
     westerly  = - Math.sin(dir*Math.PI/180)
 
-    flag = $(".windvane")
+    flag = select(".windvane")
     flag[0].setAttribute("points", "0,-0.5 #{northerly * speed/3},-0.4 0 -0.3");
     flag[1].setAttribute("points", "0,-0.5 #{westerly * speed/3},-0.4 0 -0.3");
 
     color = temp2color data.temperature, 0.1
-    $("#House .background").css 'background-color', color
+    select("#background").css 'background-color', color
 
     color = temp2color data.temperature
 
     set_color("R2201", color)
 
-    # $("#R2201").css 'background-color', color
+    # select("#R2201").css 'background-color', color
 
-    $("#R2201 .temperature").empty().append data.temperature
-    $("#R2201 .unit").empty().append "°C"
+    select("#R2201 #temperature").empty().append data.temperature
+    select("#R2201 #unit").empty().append "°C"
 
     iconurl = "http://openweathermap.org/img/w/#{data.icon}.png"
-    $('.weather img').attr 'src', iconurl
+    select('.weather img').attr 'src', iconurl
 
 
   @mower: (data) ->
@@ -270,15 +282,15 @@ exports.Room = class Room
 
     console.log "mower", data, state, mode
 
-    $('img.schaaf').attr 'src', "img/sheep/#{state}.jpg"
-    $('img.mowermode').attr 'src', "img/sheep/#{mode}.png"
+    select('img.schaaf').attr 'src', "img/sheep/#{state}.jpg"
+    select('img.mowermode').attr 'src', "img/sheep/#{mode}.png"
 
     if charge = data["mower/battery/charge"]
-      $('#R888 .charge').empty().append charge
+      select('#R888 .charge').empty().append charge
     if hours  = data["mower/statistic/hours"]
-      $('#R888 .hours').empty().append hours + " h"
+      select('#R888 .hours').empty().append hours + " h"
     if duration  = data["mower/status/duration"]
-      $('#R888 .duration').empty().append duration
+      select('#R888 .duration').empty().append duration
 
 
   @insert_gauges: ->
@@ -339,7 +351,7 @@ exports.Room = class Room
                 "Digital":  type: "digital"
 
   goto = (evt) ->
-    $("#btnRooms").click();
+    select("#btnRooms").click();
     history.pushState {}, "Rooms", "#Rooms"
     number = drop1st evt.currentTarget.id
     room   = Room.find number
@@ -363,26 +375,25 @@ exports.Room = class Room
       height: .8
       rx: .2
 
+    @svg.add_group "motion",
+      transform: "scale(0.04) translate(.4 14) "
+
     @text = @svg.add_group "text",
       transform: "scale(0.01)"
       stroke: "none"
 
     @text.add_text "name", @name,
       style: "font: normal 12px serif; fill: black;"
-      x: 20
-      y: 30
+      x: 20, y: 30
 
     @text.add_text "number", @number,
       style: "font: normal 8px serif; fill: black;"
-      x: 20
-      y: 40
+      x: 20, y: 40
 
     @text.add_text "unit", ".",
       style: "font: normal 8px serif; fill: black;"
-      x: 42
-      y: 80
+      x: 42, y: 80
 
     @text.add_text "temperature", "..",
       style: "font: normal 15px serif; fill: black;"
-      x: 40
-      y: 60
+      x: 40, y: 60
