@@ -45,11 +45,14 @@ exports.Room = class Room
 
 
   select = (selector) ->
+    select_many(selector, 1)
+
+  select_many = (selector, number) ->
     elements = $(selector)
-    console.warn "Selector #{selector} got #{elements.length} results!" unless elements.length == 1
+    console.warn "Selector #{selector} got #{elements.length} results!" unless elements.length == number
     return elements
 
-  select0 = (selector) ->
+  select_first = (selector) ->
     select(selector)[0]
 
   select_room = (room, subclass) ->
@@ -124,7 +127,6 @@ exports.Room = class Room
 
   switch_to: ->
 
-
     Room.current = @number
 
     # static text
@@ -187,8 +189,10 @@ exports.Room = class Room
       value = if raw_value then 60 else 0
     else
       value = raw_value * 0.6
-    if element = select0("#"+element_name)
-      element.setAttribute attribute, "hsl(50, 100%, #{value}%)"
+
+    if Room.current
+      if element = select_first("#"+element_name)
+        element.setAttribute attribute, "hsl(50, 100%, #{value}%)"
 
   update_visibility = (element_name) -> (visibility, timestamp) ->
     for e in select(element_name)
@@ -198,7 +202,7 @@ exports.Room = class Room
     $element.empty().append value.toFixed(1)
 
   update_value = (element_name) -> (value, timestamp) ->
-    if element = select0("#"+element_name)
+    if element = select_first("#"+element_name)
       element.value = value
 
   update_gauge = (room, gauge, quantity) -> (value, timestamp) ->
@@ -235,23 +239,17 @@ exports.Room = class Room
     dir   = data.wind.direction
     speed = Math.log(1 + data.wind.speed)
 
-    select0("#windpointer").setAttribute "transform", "rotate(#{dir}) scale(#{speed * 2})"
+    select_first("#windpointer").setAttribute "transform", "rotate(#{dir}) scale(#{speed * 2})"
 
     northerly = Math.cos(dir*Math.PI/180)
     westerly  = - Math.sin(dir*Math.PI/180)
 
-    flag = select(".windvane")
+    flag = select_many(".windvane", 2)
     flag[0].setAttribute("points", "0,-0.5 #{northerly * speed/3},-0.4 0 -0.3");
     flag[1].setAttribute("points", "0,-0.5 #{westerly * speed/3},-0.4 0 -0.3");
 
     color = temp2color data.temperature, 0.1
     select("#background").css 'background-color', color
-
-    color = temp2color data.temperature
-
-    set_color("R2201", color)
-
-    # select("#R2201").css 'background-color', color
 
     select("#R2201 #temperature").empty().append data.temperature
     select("#R2201 #unit").empty().append "°C"
