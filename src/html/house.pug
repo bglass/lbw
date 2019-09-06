@@ -103,8 +103,20 @@ style
 //-               .duration.tiny
 //-  */
 
+mixin weather
+
+  g#weather(    
+      transform="translate(.1 .1) scale(0.01)" 
+      style="fill: black;"
+      stroke-width=0.005 
+      )
+    rect(width=80, height=80, rx=20, style="fill: none" stroke-width=0.5 )
+    text.temperature(x= 20, y=42, style="font: normal 25px serif;" ) ..
+    text.unit(x=40, y=60, style="font: normal  8px serif;") °C
+    image.icon(x=20 y=-35 width=70)
+      
 #background
   svg(id="house" viewBox="0 -1 12 8" stroke="black" fill="none")
     include icon/castle
     include icon/compass
-  
+    +weather

@@ -234,15 +234,16 @@ exports.Room = class Room
   @outdoor: (data) ->
     visualize_wind(data.wind)
     visualize_temperature(data.temperature)
+    show_icon(data.icon)
 
-  @visualize_wind: (wind) ->
+  visualize_wind = (wind) ->
     dir   = wind.direction
     speed = Math.log(1 + wind.speed)
 
     update_flags dir, speed
     update_compass dir, speed
 
-  @update_flags: (dir, speed) ->
+  update_flags = (dir, speed) ->
     northerly = Math.cos(dir*Math.PI/180)
     westerly  = - Math.sin(dir*Math.PI/180)
 
@@ -250,22 +251,19 @@ exports.Room = class Room
     flag[0].setAttribute("points", "0,-0.5 #{northerly * speed/3},-0.4 0 -0.3");
     flag[1].setAttribute("points", "0,-0.5 #{westerly * speed/3},-0.4 0 -0.3");
 
-
-  @update_compass: (dir, speed) ->
+  update_compass = (dir, speed) ->
     select_first("#windpointer").setAttribute "transform", "rotate(#{dir}) scale(#{speed * 2})"
 
-
-  @visualize_temperature: (temperature) ->
-    update_background_color
+  visualize_temperature = (temperature) ->
     color = temp2color temperature, 0.1
     select("#background").css 'background-color', color
 
-    select("#R2201 #temperature").empty().append temperature
-    select("#R2201 #unit").empty().append "°C"
+    select("#weather .temperature").empty().append temperature
+    select("#weather .unit").empty().append "°C"
 
-    iconurl = "http://openweathermap.org/img/w/#{data.icon}.png"
-    select('.weather img').attr 'src', iconurl
-
+  show_icon = (icon) ->
+    iconurl = "http://openweathermap.org/img/w/#{icon}.png"
+    select('#weather image.icon').attr 'href', iconurl
 
   @mower: (data) ->
 
