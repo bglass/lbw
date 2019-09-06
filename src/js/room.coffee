@@ -114,10 +114,8 @@ exports.Room = class Room
       id = "Dim" + light.name
       light.subscribe update_value(id)
     for motion in devices.motions
-      # uv = update_visibility("#feet"+motion.name)
       uv = update_visibility("#"+motion.name)
       motion.subscribe uv
-      # uv = update_visibility(".motion svg#"+motion.name)
       uv = update_visibility("#"+motion.name)
       motion.subscribe uv
 
@@ -168,9 +166,6 @@ exports.Room = class Room
     @refresh()
 
   refresh: ->
-
-    console.log "refreshing"
-
     for type, devices of @devices
       for device in devices
         device.refresh()
@@ -202,8 +197,9 @@ exports.Room = class Room
     $element.empty().append value.toFixed(1)
 
   update_value = (element_name) -> (value, timestamp) ->
-    if element = select_first("#"+element_name)
-      element.value = value
+    if Room.current and element_name.includes Room.current
+      if element = select_first("#"+element_name)
+        element.value = value
 
   update_gauge = (room, gauge, quantity) -> (value, timestamp) ->
     if room == Room.current

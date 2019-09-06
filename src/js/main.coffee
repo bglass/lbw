@@ -60,23 +60,18 @@ create_house = ->
   Room.set_find_devices Device.find_type
 
 connect_nodered = ->
-
   weather = new Weather
   weather.subscribe Room.outdoor
   sheep   = new Sheep
   sheep.subscribe  Room.mower
-
   red     = new NodeRed
   red.subscribe "GA",       [ Device.discover, Room.receive_group_adress_catalog, red.request_replay ]
   red.subscribe "dpt",      [ Device.receive ]
   red.subscribe "weather",  [ weather.receive ]
-  red.subscribe "schaaf",    [ sheep.receive ]
-
+  red.subscribe "schaaf",   [ sheep.receive ]
   Device.uplink red.send
 
-
 $ ->
-
   restore_selected_tab()
   create_clock()
   create_house()
