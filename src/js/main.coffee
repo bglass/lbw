@@ -1,17 +1,18 @@
 require '../css/main.css'
 
-{Gauge} = require './gauge/gauge.coffee'
-{House} = require './house.coffee'
-{Room}  = require './room.coffee'
-{Device} = require './device.coffee'
+{Gauge}   = require './gauge/gauge.coffee'
+{House}   = require './house.coffee'
+{Room}    = require './room.coffee'
+{Device}  = require './device.coffee'
+{NodeRed} = require './node_red.coffee'
+{Tabs}    = require './tabs.coffee'
+time      = require './time.coffee'
 {Weather, Sheep} = require './source.coffee'
 
-{NodeRed} = require './node_red.coffee'
-time = require './time.coffee'
+House.configure gauge: Gauge, room: Room
+Room.configure gauge: Gauge
 
-{Tabs}  = require './tabs.coffee'
 window.tab_select = Tabs.tab_select
-
 
 lbw25 = {
   "001": ["Entry",       0, 1],
@@ -45,32 +46,27 @@ lbw25 = {
 }
 
 
-$ ->
-
+restore_selected_tab = ->
   # try to restore a previously selected tab in the browser
   tab = if    hash = window.location.hash.substr 1 then hash else  "House"
   $("#btn" + tab).click();
 
-  # show the clock
+create_clock = ->
   time.add
     gauge: Gauge
 
-  red     = new NodeRed
-  weather = new Weather
-  sheep   = new Sheep
-
-  House.configure
-    room:  Room
-    gauge: Gauge
-
-
-  Room.configure
-    gauge: Gauge
-
+create_house = ->
+  new House lbw25
   Room.set_find_devices Device.find_type
 
-  house = new House lbw25
+connect_nodered = ->
 
+  weather = new Weather
+  weather.subscribe Room.outdoor
+  sheep   = new Sheep
+  sheep.subscribe  Room.mower
+
+  red     = new NodeRed
   red.subscribe "GA",       [ Device.discover, Room.receive_group_adress_catalog, red.request_replay ]
   red.subscribe "dpt",      [ Device.receive ]
   red.subscribe "weather",  [ weather.receive ]
@@ -78,7 +74,10 @@ $ ->
 
   Device.uplink red.send
 
-  console.log "done so far"
 
-  weather.subscribe Room.outdoor
-  sheep.subscribe  Room.mower
+$ ->
+
+  restore_selected_tab()
+  create_clock()
+  create_house()
+  connect_nodered()

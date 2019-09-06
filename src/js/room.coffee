@@ -236,11 +236,17 @@ exports.Room = class Room
     cell.append src
 
   @outdoor: (data) ->
-    dir   = data.wind.direction
-    speed = Math.log(1 + data.wind.speed)
+    visualize_wind(data.wind)
+    visualize_temperature(data.temperature)
 
-    select_first("#windpointer").setAttribute "transform", "rotate(#{dir}) scale(#{speed * 2})"
+  @visualize_wind: (wind) ->
+    dir   = wind.direction
+    speed = Math.log(1 + wind.speed)
 
+    update_flags dir, speed
+    update_compass dir, speed
+
+  @update_flags: (dir, speed) ->
     northerly = Math.cos(dir*Math.PI/180)
     westerly  = - Math.sin(dir*Math.PI/180)
 
@@ -248,10 +254,17 @@ exports.Room = class Room
     flag[0].setAttribute("points", "0,-0.5 #{northerly * speed/3},-0.4 0 -0.3");
     flag[1].setAttribute("points", "0,-0.5 #{westerly * speed/3},-0.4 0 -0.3");
 
-    color = temp2color data.temperature, 0.1
+
+  @update_compass: (dir, speed) ->
+    select_first("#windpointer").setAttribute "transform", "rotate(#{dir}) scale(#{speed * 2})"
+
+
+  @visualize_temperature: (temperature) ->
+    update_background_color
+    color = temp2color temperature, 0.1
     select("#background").css 'background-color', color
 
-    select("#R2201 #temperature").empty().append data.temperature
+    select("#R2201 #temperature").empty().append temperature
     select("#R2201 #unit").empty().append "°C"
 
     iconurl = "http://openweathermap.org/img/w/#{data.icon}.png"
